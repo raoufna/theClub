@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">wardrobe</string>
+    <string name="email">E-mail</string>
+    <string name="login">Are you already registered?</string>
+    <string name="password">password</string>
+    <string name="passwordForgotten">did you forgot the password?</string>
+    <string name="image_of_a_w">image of a W</string>
+    <string name="loginButton">login</string>
+
 </resources>
