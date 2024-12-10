@@ -1,10 +1,12 @@
 package com.unimib.wardrobe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
+import android.text.Editable;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import android.text.TextWatcher;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -40,6 +42,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (isPasswordOk(editTextPassword.getText().toString())) {
                     passwordInputLayout.setError(null);
                     passwordInputLayout.setHintTextColor(null);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+
                 }else{
                     passwordInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
                     passwordInputLayout.setError(" ");
@@ -53,6 +58,24 @@ public class LoginActivity extends AppCompatActivity {
                 emailInputLayout.setErrorIconDrawable(null);
                 emailInputLayout.setHintTextColor(getResources().getColorStateList(R.color.md_theme_error));
                 editTextEmail.setError("l'email non è valida");
+            }
+        });
+        editTextPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Non serve implementare
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Quando l'utente inizia a digitare, riattiva l'icona
+                if (passwordInputLayout.getEndIconMode() != TextInputLayout.END_ICON_PASSWORD_TOGGLE) {
+                    passwordInputLayout.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
+
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Non serve implementare
             }
         });
 
