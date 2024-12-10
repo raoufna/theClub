@@ -30,4 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+    private boolean passwordIsOk(String password){
+        return password.length() > 7;
+    }
 }

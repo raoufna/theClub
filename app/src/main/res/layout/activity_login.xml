@@ -20,7 +20,7 @@
 
 
   <com.google.android.material.textfield.TextInputLayout
-      style="?attr/textInputFilledStyle"
+
       android:layout_marginTop="50dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
   </com.google.android.material.textfield.TextInputLayout>
 
   <com.google.android.material.textfield.TextInputLayout
-      style="?attr/textInputFilledStyle"
+
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
 
@@ -55,16 +55,18 @@
         />
   </com.google.android.material.textfield.TextInputLayout>
   <Button
+
       style="@style/Widget.Material3.Button.TextButton"
       android:id="@+id/textButton"
+
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:text="@string/passwordForgotten"/>
   <Button
       android:id="@+id/filledButton"
-      android:layout_marginStart="16dp"
-      android:layout_marginEnd="16dp"
+      android:layout_marginStart="70dp"
+      android:layout_marginEnd="70dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/loginButton"

@@ -3,7 +3,7 @@
     <string name="app_name">wardrobe</string>
     <string name="image_of_a_w">image_of_W</string>
     <string name="email">E-mail</string>
-    <string name="password">password</string>
+    <string name="password">Password</string>
     <string name="passwordForgotten">did you forgot the password?</string>
     <string name="loginButton">login</string>
 </resources>
