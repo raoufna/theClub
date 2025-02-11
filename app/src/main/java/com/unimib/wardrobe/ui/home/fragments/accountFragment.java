@@ -1,4 +1,4 @@
-package com.unimib.wardrobe;
+package com.unimib.wardrobe.ui.home.fragments;
 
 import android.os.Bundle;
 
@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.unimib.wardrobe.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link addFragment#newInstance} factory method to
+ * Use the {@link accountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class addFragment extends Fragment {
+public class accountFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +26,7 @@ public class addFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public addFragment() {
+    public accountFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +36,11 @@ public class addFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment addFragment.
+     * @return A new instance of fragment accountFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static addFragment newInstance(String param1, String param2) {
-        addFragment fragment = new addFragment();
+    public static accountFragment newInstance(String param1, String param2) {
+        accountFragment fragment = new accountFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,6 +61,6 @@ public class addFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add, container, false);
+        return inflater.inflate(R.layout.fragment_account, container, false);
     }
 }
