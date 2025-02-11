@@ -1,4 +1,4 @@
-package com.unimib.wardrobe;
+package com.unimib.wardrobe.ui.welcome;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,12 +7,11 @@ import android.text.Editable;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextWatcher;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.unimib.wardrobe.R;
+import com.unimib.wardrobe.ui.home.MainActivity;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
