@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024901192821",
+    "project_id": "pdmwardrobe",
+    "storage_bucket": "pdmwardrobe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024901192821:android:55af2baa5c2f7d5747ac3c",
+        "android_client_info": {
+          "package_name": "com.unimib.wardrobe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrHds9ON734pu69_CgZ0H6DfaaiZK_M9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

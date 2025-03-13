@@ -2,6 +2,7 @@ package com.unimib.wardrobe.ui.welcome;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.text.Editable;
 import androidx.activity.EdgeToEdge;
@@ -10,6 +11,8 @@ import android.text.TextWatcher;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.ui.home.MainActivity;
 
@@ -17,6 +20,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 
 public class LoginActivity extends AppCompatActivity {
     private TextInputEditText editTextEmail, editTextPassword;
+    private static final String TAG2 = LoginActivity.class.getSimpleName();
 
     public static final String TAG = LoginActivity.class.getName();
 
@@ -59,6 +63,10 @@ public class LoginActivity extends AppCompatActivity {
                 editTextEmail.setError("l'email non è valida");
             }
         });
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        Log.i(TAG2,user+"");
+
         editTextPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
