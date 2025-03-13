@@ -9,6 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.unimib.wardrobe.R;
+import com.unimib.wardrobe.model.Product;
+import com.unimib.wardrobe.model.ProductAPIResponse;
+import com.unimib.wardrobe.util.Constants;
+import com.unimib.wardrobe.util.JSONParserUtils;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +24,7 @@ import com.unimib.wardrobe.R;
  */
 public class homeFragment extends Fragment {
 
+    public static final String TAG = homeFragment.class.getName();
     public homeFragment() {
         // Required empty public constructor
     }
@@ -29,7 +37,14 @@ public class homeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        JSONParserUtils jsonParserUtils = new JSONParserUtils(getContext());
+        try {
+            ProductAPIResponse response = jsonParserUtils.parseJSONFileWithGSon(Constants.JsonWardrobe);
+            List<Product> productList = response.getProducts();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return view;
     }
 }
