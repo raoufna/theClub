@@ -10,4 +10,6 @@
     <string name="home">home</string>
     <string name="add">new</string>
     <string name="account">account</string>
+    <string name="descrizione">Descrizione</string>
+    <string name="titolo">Titolo</string>
 </resources>
