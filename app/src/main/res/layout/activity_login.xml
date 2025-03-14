@@ -16,7 +16,7 @@
       android:layout_width="match_parent"
       android:layout_height="150dp"
       android:contentDescription="@string/image_of_a_w"
-      app:srcCompat="@drawable/ic_login" />
+      app:srcCompat="@drawable/logo" />
 
 
   <com.google.android.material.textfield.TextInputLayout
