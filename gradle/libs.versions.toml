@@ -1,6 +1,7 @@
 [versions]
 agp = "8.6.0"
 commonsValidator = "1.9.0"
+glide = "4.13.2"
 gson = "2.12.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -11,6 +12,8 @@ activity = "1.9.3"
 constraintlayout = "2.2.0"
 
 [libraries]
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 navigation-fragment = { module = "androidx.navigation:navigation-fragment", version = "2.7.6" }
 navigation-ui = { module = "androidx.navigation:navigation-ui", version = "2.7.6" }
