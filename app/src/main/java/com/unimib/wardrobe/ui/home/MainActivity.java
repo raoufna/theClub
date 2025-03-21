@@ -11,6 +11,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.unimib.wardrobe.R;
+import com.unimib.wardrobe.database.ProductRoomDatabase;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,5 +39,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNav, navController);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
+        ProductRoomDatabase.getDatabase(getApplicationContext()).ProductDao().deleteAll();
     }
 }

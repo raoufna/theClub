@@ -1,12 +1,18 @@
 package com.unimib.wardrobe.model;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class Product {
+    @PrimaryKey(autoGenerate = true)
+    public int uid;
+
     private String name;
     private String brandName;
     private String imageUrl;
 
     public Product(){
     }
-
     public String getName() {
         return name;
     }
