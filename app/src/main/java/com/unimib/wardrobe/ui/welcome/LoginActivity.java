@@ -11,8 +11,8 @@ import android.text.TextWatcher;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.auth.FirebaseUser;
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.ui.home.MainActivity;
 
@@ -31,39 +31,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
-        editTextEmail = findViewById(R.id.email);
-        TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
-        editTextPassword = findViewById(R.id.password);
-        TextInputLayout emailInputLayout = findViewById(R.id.emailInputLayout);
 
-        Button loginButton = findViewById(R.id.filledButton);
-        loginButton.setOnClickListener(view -> {
-            if(isEmailOk(editTextEmail.getText().toString())){
-                emailInputLayout.setError(null);
-                emailInputLayout.setHintTextColor(null);
-
-                if (isPasswordOk(editTextPassword.getText().toString())) {
-                    passwordInputLayout.setError(null);
-                    passwordInputLayout.setHintTextColor(null);
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-
-                }else{
-                    passwordInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
-                    passwordInputLayout.setError(" ");
-                    passwordInputLayout.setErrorIconDrawable(null);
-                    passwordInputLayout.setHintTextColor(getResources().getColorStateList(R.color.md_theme_error));
-                    editTextPassword.setError("la password deve avere almeno 8 caratteri");
-                }
-
-            }else{
-                emailInputLayout.setError(" ");
-                emailInputLayout.setErrorIconDrawable(null);
-                emailInputLayout.setHintTextColor(getResources().getColorStateList(R.color.md_theme_error));
-                editTextEmail.setError("l'email non è valida");
-            }
-        });
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+      /*  FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         Log.i(TAG2,user+"");
 
@@ -73,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Non serve implementare
             }
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+           public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Quando l'utente inizia a digitare, riattiva l'icona
                 if (passwordInputLayout.getEndIconMode() != TextInputLayout.END_ICON_PASSWORD_TOGGLE) {
                     passwordInputLayout.setEndIconMode(TextInputLayout.END_ICON_PASSWORD_TOGGLE);
@@ -85,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Non serve implementare
             }
         });
-
+*/
     }
     private boolean isEmailOk(String email){
         return EmailValidator.getInstance().isValid(email);
