@@ -41,7 +41,7 @@ public class accountFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
         List<Product> productList = ProductRoomDatabase.getDatabase(getContext()).ProductDao().getAll();
 
-        ProductRecycleAdapter adapter = new ProductRecycleAdapter(R.layout.card_item, productList);
+        ProductRecycleAdapter adapter = new ProductRecycleAdapter(R.layout.card_item, productList, false);
         recyclerView.setAdapter(adapter);
         return view;
     }

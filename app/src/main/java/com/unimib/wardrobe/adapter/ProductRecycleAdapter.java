@@ -24,6 +24,7 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
 
         private int layout;
         private List<Product> productList;
+        private boolean heartVisible;
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
             private final TextView TextViewTitle;
@@ -58,9 +59,10 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
         }
 
 
-        public ProductRecycleAdapter(int layout, List<Product> productList) {
+        public ProductRecycleAdapter(int layout, List<Product> productList, boolean heartVisible) {
             this.layout = layout;
             this.productList = productList;
+            this.heartVisible = heartVisible;
         }
 
         // Create new views (invoked by the layout manager)
@@ -95,6 +97,10 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
                     }
                 }
             });
+
+            if(heartVisible == false){
+                viewHolder.getFavoriteCheckBox().setVisibility(View.INVISIBLE);
+            }
         }
 
         // Return the size of your dataset (invoked by the layout manager)

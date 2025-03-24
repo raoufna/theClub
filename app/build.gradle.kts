@@ -50,4 +50,6 @@ dependencies {
 
     implementation(libs.glide)
     implementation(libs.compiler) //librerie per Glide
+
+    implementation(libs.retrofit)
 }

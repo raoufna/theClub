@@ -17,11 +17,12 @@ import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;
 import com.unimib.wardrobe.util.Constants;
 import com.unimib.wardrobe.util.JSONParserUtils;
+import com.unimib.wardrobe.util.ResponseCallback;
 
 import java.io.IOException;
 import java.util.List;
 
-public class homeFragment extends Fragment {
+public class homeFragment extends Fragment implements ResponseCallback {
 
     public static final String TAG = homeFragment.class.getName();
     public homeFragment() {
@@ -46,12 +47,22 @@ public class homeFragment extends Fragment {
             ProductAPIResponse response = jsonParserUtils.parseJSONFileWithGSon(Constants.JsonWardrobe);
             List<Product> productList = response.getProducts();
 
-            ProductRecycleAdapter adapter = new ProductRecycleAdapter(R.layout.card_item, productList);
+            ProductRecycleAdapter adapter = new ProductRecycleAdapter(R.layout.card_item, productList, true);
 
             recyclerView.setAdapter(adapter);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return view;
+    }
+
+    @Override
+    public void onSuccess(List<Product> productList, long lastUpdate) {
+
+    }
+
+    @Override
+    public void onFailure(String errorMessage) {
+
     }
 }

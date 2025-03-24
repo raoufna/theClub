@@ -19,6 +19,9 @@ public interface ProductDAO {
     @Delete
     void delete(Product user);
 
+    @Query("DELETE FROM Product WHERE name = :name AND brandName = :brandName")
+    void deleteByNameAndBrand(String name, String brandName);
+
 
     @Query("DELETE from Product")
     void deleteAll();
