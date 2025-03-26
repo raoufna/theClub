@@ -4,12 +4,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.unimib.wardrobe.database.ProductRoomDatabase;
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.model.Product;
@@ -26,6 +29,7 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
             private final TextView TextViewTitle;
             private final TextView TextViewDescription;
             private final ImageView ImageItem;
+            private final CheckBox FavoriteCheckBox;
 
             public ViewHolder(View view) {
                 super(view);
@@ -34,6 +38,7 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
                 TextViewTitle = view.findViewById(R.id.TextViewTitle);
                 TextViewDescription = view.findViewById(R.id.TextViewDescription);
                 ImageItem = view.findViewById(R.id.ImageItem);
+                FavoriteCheckBox = view.findViewById(R.id.favoriteButton);
             }
 
             public TextView getTextViewTitle() {
@@ -46,6 +51,9 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
 
             public ImageView getImageView() {
                 return ImageItem;
+            }
+            public CheckBox getFavoriteCheckBox() {
+                return FavoriteCheckBox;
             }
         }
 
@@ -73,6 +81,20 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
                     .into(viewHolder.ImageItem);
             viewHolder.getTextViewTitle().setText(productList.get(position).getName());
             viewHolder.getTextViewDescription().setText(productList.get(position).getBrandName());
+            viewHolder.getFavoriteCheckBox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b){
+                        ProductRoomDatabase.getDatabase(viewHolder.getTextViewDescription().getContext()).
+                                ProductDao().insertAll(productList.get(position));
+
+                    }else{
+                        ProductRoomDatabase.getDatabase(viewHolder.getTextViewDescription().getContext()).
+                                ProductDao().delete(productList.get(position));
+
+                    }
+                }
+            });
         }
 
         // Return the size of your dataset (invoked by the layout manager)
