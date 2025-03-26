@@ -5,14 +5,31 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Product {
     @PrimaryKey(autoGenerate = true)
-    public int uid;
+    public long uid;
 
     private String name;
     private String brandName;
     private String imageUrl;
+    private boolean liked;
 
     public Product(){
     }
+    public long getUid() {
+        return uid;
+    }
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
+
+    public boolean getLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
     public String getName() {
         return name;
     }
@@ -36,5 +53,13 @@ public class Product {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+    public String getFullImageUrl() {
+        if (imageUrl != null && !imageUrl.startsWith("http")) {
+            return "https://" + imageUrl;
+        }
+        return imageUrl;
+    }
 }
+
+
 
