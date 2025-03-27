@@ -12,7 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.unimib.wardrobe.R;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,45 +24,21 @@ import com.unimib.wardrobe.R;
  * create an instance of this fragment.
  */
 public class SigninFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextInputEditText editTextEmail, editTextPassword, editTextName;
 
     public SigninFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SigninFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static SigninFragment newInstance(String param1, String param2) {
         SigninFragment fragment = new SigninFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -70,15 +50,54 @@ public class SigninFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        editTextEmail = view.findViewById(R.id.email);
+        TextInputLayout passwordInputLayout = view.findViewById(R.id.passwordInputLayout);
+        editTextPassword = view.findViewById(R.id.password);
+        TextInputLayout emailInputLayout = view.findViewById(R.id.emailInputLayout);
+        editTextName = view.findViewById(R.id.name);
+        TextInputLayout nameInputLayout = view.findViewById(R.id.nameinputLayout);
+
         Button SignupButton = view.findViewById(R.id.SignupButton);
         SignupButton.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_signinFragment_to_mainActivity);
+            if(isEmailOk(editTextEmail.getText().toString())){
+                emailInputLayout.setError(null);
+                emailInputLayout.setHintTextColor(null);
+
+                if (isPasswordOk(editTextPassword.getText().toString())) {
+                    passwordInputLayout.setError(null);
+                    passwordInputLayout.setHintTextColor(null);
+                    Navigation.findNavController(v).navigate(R.id.action_signinFragment_to_mainActivity);
+                    if(editTextName.getText().toString().isEmpty()){
+
+                    }
+                }else{
+                    passwordInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
+                    passwordInputLayout.setError(" ");
+                    passwordInputLayout.setErrorIconDrawable(null);
+                    passwordInputLayout.setHintTextColor(getResources().getColorStateList(R.color.md_theme_error));
+                    editTextPassword.setError("la password deve avere almeno 8 caratteri");
+                }
+
+            }else{
+                emailInputLayout.setError(" ");
+                emailInputLayout.setErrorIconDrawable(null);
+                emailInputLayout.setHintTextColor(getResources().getColorStateList(R.color.md_theme_error));
+                editTextEmail.setError("l'email non è valida");
+            }
+
         });
         Button textButtonlog = view.findViewById(R.id.textButtonlog);
         textButtonlog.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_signinFragment_to_loginFragment);
         });
         }
+    private boolean isEmailOk(String email){
+        return EmailValidator.getInstance().isValid(email);
+    }
+    private boolean isPasswordOk(String password){
+        return password.length() > 7;
+    }
     }
 
 
