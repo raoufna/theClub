@@ -83,12 +83,15 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
                     .into(viewHolder.ImageItem);
             viewHolder.getTextViewTitle().setText(productList.get(position).getName());
             viewHolder.getTextViewDescription().setText(productList.get(position).getBrandName());
+            viewHolder.getFavoriteCheckBox().setChecked(productList.get(position).getLiked());
             viewHolder.getFavoriteCheckBox().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    Product currentProduct = productList.get(viewHolder.getAdapterPosition());
                     if (b){
+                        currentProduct.setLiked(b);
                         ProductRoomDatabase.getDatabase(viewHolder.getTextViewDescription().getContext()).
-                                ProductDao().insertAll(productList.get(position));
+                                ProductDao().insert(currentProduct);
 
                     }else{
                         ProductRoomDatabase.getDatabase(viewHolder.getTextViewDescription().getContext()).
@@ -98,9 +101,6 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
                 }
             });
 
-            if(heartVisible == false){
-                viewHolder.getFavoriteCheckBox().setVisibility(View.INVISIBLE);
-            }
         }
 
         // Return the size of your dataset (invoked by the layout manager)

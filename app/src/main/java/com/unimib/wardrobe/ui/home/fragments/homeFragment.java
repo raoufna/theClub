@@ -71,6 +71,8 @@ public class homeFragment extends Fragment implements ResponseCallback {
         adapter = new ProductRecycleAdapter(R.layout.card_item,
                 productList, true);
 
+        productRepository.getFavoriteProduct();
+
         recyclerView.setAdapter(adapter);
 
         productRepository.fetchProduct("jeans", 10, 1000);
@@ -82,7 +84,6 @@ public class homeFragment extends Fragment implements ResponseCallback {
     public void onSuccess(List<Product> newProductList, long lastUpdate) {
         productList.clear();
         productList.addAll(newProductList);
-        Log.d("API_RESPONSE", "Prodotti ricevuti: " + newProductList.size());
         requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
