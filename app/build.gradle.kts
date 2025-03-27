@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -12,6 +14,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        resValue("string", "rapidapi_key", gradleLocalProperties(rootDir, providers).getProperty("rapidapi_key"))
+        resValue("bool", "debug_mode", gradleLocalProperties(rootDir, providers).getProperty("debug_mode"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,4 +55,7 @@ dependencies {
 
     implementation(libs.glide)
     implementation(libs.compiler) //librerie per Glide
+
+    implementation(libs.retrofit) //librerie per implementare retrofit e convertiore gson
+    implementation(libs.converter.gson)
 }
