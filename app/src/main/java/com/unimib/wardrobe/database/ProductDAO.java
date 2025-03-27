@@ -33,6 +33,9 @@ public interface ProductDAO {
     @Delete
     void delete(Product user);
 
+    @Query("DELETE from Product WHERE liked = 0")
+    void deleteCached();
+
     @Query("DELETE FROM Product WHERE name = :name AND brandName = :brandName")
     void deleteByNameAndBrand(String name, String brandName);
 

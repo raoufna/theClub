@@ -1,8 +1,12 @@
 package com.unimib.wardrobe.repository;
 
-public interface IProductRepository {
-    void fetchProduct(String searchTerm, int page, long lastUpdate);
+import com.unimib.wardrobe.model.Product;
 
-    void getFavoritsProduct();
+public interface IProductRepository {
+
+    void fetchProduct(String searchTerm, int page, long lastUpdate);
+    void getFavoriteProduct();
+    void deleteFavoriteProduct();
+    void updateProduct(Product product);
 
 }

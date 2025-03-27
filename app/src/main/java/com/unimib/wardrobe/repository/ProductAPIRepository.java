@@ -40,38 +40,34 @@ public class ProductAPIRepository implements IProductRepository{
         ProductRoomDatabase productRoomDatabase = ServiceLocator.getInstance().getProductDB(application);
         this.productDAO = productRoomDatabase.ProductDao();
         this.responseCallback = responseCallback;
+        ProductRoomDatabase.databaseWriteExecutor.execute(() -> {
+            productDAO.deleteAll();  // Assicurati di avere questo metodo nel tuo DAO
+        });
     }
 
     @Override
     public void fetchProduct(String searchTerm, int page, long lastUpdate) {
         long currentTime = System.currentTimeMillis();
-        if(true){
-            Map<String, String> queryParams = new HashMap<>();
-            queryParams.put("searchTerm", searchTerm);
-            queryParams.put("country", "US");
-            queryParams.put("store", "US");
-            queryParams.put("languageShort", "en");
-            queryParams.put("sizeSchema", "US");
-            queryParams.put("limit", "50");
-            queryParams.put("offset", "0");
-            queryParams.put("sort", "recommended");
+        List<Product> cachedProducts = productDAO.getAll();
+        if(cachedProducts != null && !cachedProducts.isEmpty()) {
 
+            responseCallback.onSuccess(cachedProducts, System.currentTimeMillis());
+        }else {
+                Map<String, String> queryParams = new HashMap<>();
+                queryParams.put("searchTerm", searchTerm);
+                queryParams.put("country", "US");
+                queryParams.put("store", "US");
+                queryParams.put("languageShort", "en");
+                queryParams.put("sizeSchema", "US");
+                queryParams.put("limit", "50");
+                queryParams.put("offset", "0");
+                queryParams.put("sort", "recommended");
             Call<ProductAPIResponse> productAPIResponseCall = productAPIService.getHeadLinesProduct(searchTerm, "US", "US", "en", "US", 50, 0, "recommended", Constants.host, Constants.apiKey);
-
-            Log.d("API_REQUEST", "Chiamata API: " + productAPIResponseCall.request().url());
             productAPIResponseCall.enqueue(new Callback<ProductAPIResponse>(){
                 @Override
                 public void onResponse(@NonNull Call<ProductAPIResponse> call,
                                        @NonNull Response<ProductAPIResponse> response) {
-                    Log.d("API_RESPONSE", "Codice risposta: " + response.code());
-                    Log.d("API_RESPONSE", "Risposta API: " + response.body());
-                    Log.d("API_RESPONSE", "Contenuto JSON: " + new Gson().toJson(response.body()));
-                    Log.d("API_REQUEST", "Parametri inviati: " + queryParams.toString());
-                    Log.d("API_RESPONSE", "Raw Response: " + response.raw().toString());
-                    Log.d("API_RESPONSE", "Headers: " + response.headers());
                     if (response.isSuccessful() && response.body() != null) {
-                        String jsonResponse = new Gson().toJson(response.body());
-                        Log.d("API_RESPONSE", "Risposta API (JSON): " + jsonResponse);
                         List<Product> productList = response.body().getData().getProducts();
 
                         if (productList != null && !productList.isEmpty()) {
@@ -91,13 +87,29 @@ public class ProductAPIRepository implements IProductRepository{
                     responseCallback.onFailure("Errore di rete: " + t.getMessage());
                 }
             });
-        } else {
-            readDataFromDatabase(lastUpdate);
         }
     }
 
     @Override
-    public void getFavoritsProduct() {
+    public void deleteFavoriteProduct(){
+        ProductRoomDatabase.databaseWriteExecutor.execute(()-> {
+            List<Product> favoriteProducs = productDAO.getLiked();
+            for(Product product : favoriteProducs){
+                product.setLiked(false);
+            }
+            responseCallback.onSuccess(productDAO.getLiked(), System.currentTimeMillis());
+        });
+    }
+    @Override
+    public void updateProduct(Product product){
+        ProductRoomDatabase.databaseWriteExecutor.execute(()->{
+            productDAO.insert(product);
+        });
+    }
+
+
+    @Override
+    public void getFavoriteProduct() {
         ProductRoomDatabase.databaseWriteExecutor.execute(() -> {
             responseCallback.onSuccess(productDAO.getLiked(), System.currentTimeMillis());
         });
@@ -105,31 +117,16 @@ public class ProductAPIRepository implements IProductRepository{
 
     private void saveDataInDatabase(List<Product> apiArticle) {
         ProductRoomDatabase.databaseWriteExecutor.execute(() -> {
-            // Reads the news from the database
             List<Product> localProduct = productDAO.getAll();
 
-            // Checks if the news just downloaded has already been downloaded earlier
-            // in order to preserve the news status (marked as favorite or not)
             for (Product product : localProduct) {
-                // This check works because News and NewsSource classes have their own
-                // implementation of equals(Object) and hashCode() methods
                 if (apiArticle.contains(product)) {
-                    // The primary key and the favorite status is contained only in the News objects
-                    // retrieved from the database, and not in the News objects downloaded from the
-                    // Web Service. If the same news was already downloaded earlier, the following
-                    // line of code replaces the the News object in newsList with the corresponding
-                    // News object saved in the database, so that it has the primary key and the
-                    // favorite status.
                     apiArticle.set(apiArticle.indexOf(product), product);
                 }
             }
 
-            // Writes the news in the database and gets the associated primary keys
             List<Long> insertedProductIds = productDAO.insertProductList(apiArticle);
             for (int i = 0; i < apiArticle.size(); i++) {
-                // Adds the primary key to the corresponding object News just downloaded so that
-                // if the user marks the news as favorite (and vice-versa), we can use its id
-                // to know which news in the database must be marked as favorite/not favorite
                 apiArticle.get(i).setUid(insertedProductIds.get(i));
             }
 
