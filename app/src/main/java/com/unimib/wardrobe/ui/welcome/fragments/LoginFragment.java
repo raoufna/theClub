@@ -60,6 +60,11 @@ public class LoginFragment extends Fragment {
         editTextPassword = view.findViewById(R.id.password);
         TextInputLayout emailInputLayout = view.findViewById(R.id.emailInputLayout);
 
+        Button SignupButton = view.findViewById(R.id.SignupButton);
+        SignupButton.setOnClickListener(vv -> {
+            Navigation.findNavController(vv).navigate(R.id.action_loginFragment_to_signinFragment);
+        });
+
         Button loginButton = view.findViewById(R.id.filledButton);
         loginButton.setOnClickListener(v -> {
             if(isEmailOk(editTextEmail.getText().toString())){
