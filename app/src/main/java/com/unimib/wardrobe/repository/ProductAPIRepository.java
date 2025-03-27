@@ -15,6 +15,8 @@ import com.unimib.wardrobe.service.ProductAPIService;
 import com.unimib.wardrobe.service.ServiceLocator;
 import com.unimib.wardrobe.util.Constants;
 import com.unimib.wardrobe.util.ResponseCallback;
+import androidx.recyclerview.widget.RecyclerView;  // Import per RecyclerView
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +52,6 @@ public class ProductAPIRepository implements IProductRepository{
         long currentTime = System.currentTimeMillis();
         List<Product> cachedProducts = productDAO.getAll();
         if(cachedProducts != null && !cachedProducts.isEmpty()) {
-
             responseCallback.onSuccess(cachedProducts, System.currentTimeMillis());
         }else {
                 Map<String, String> queryParams = new HashMap<>();

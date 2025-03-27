@@ -57,6 +57,8 @@ public class homeFragment extends Fragment implements ResponseCallback {
         }
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,13 +67,14 @@ public class homeFragment extends Fragment implements ResponseCallback {
 
         recyclerView = view.findViewById(R.id.recycleView);
         circularProgressIndicator = view.findViewById(R.id.progressIndicator);
+
         //recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 
         adapter = new ProductRecycleAdapter(R.layout.card_item,
                 productList, true);
 
-        productRepository.getFavoriteProduct();
+        //productRepository.getFavoriteProduct();
 
         recyclerView.setAdapter(adapter);
 
@@ -84,13 +87,13 @@ public class homeFragment extends Fragment implements ResponseCallback {
     public void onSuccess(List<Product> newProductList, long lastUpdate) {
         productList.clear();
         productList.addAll(newProductList);
-        requireActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-                recyclerView.setVisibility(View.VISIBLE);
-                circularProgressIndicator.setVisibility(View.GONE);
-            }
+        requireActivity().runOnUiThread(new Runnable(){
+                @Override
+                public void run(){
+                    adapter.notifyDataSetChanged();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    circularProgressIndicator.setVisibility(View.GONE);
+                }
         });
     }
 
@@ -99,4 +102,5 @@ public class homeFragment extends Fragment implements ResponseCallback {
         Log.e("API_ERROR", "Errore nella chiamata API: " + errorMessage);
         Snackbar.make(recyclerView, errorMessage, Snackbar.LENGTH_LONG).show();
     }
+
 }
