@@ -30,6 +30,9 @@ public interface ProductDAO {
     @Insert
     void insertAll(Product... users);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insertNewsList(List<Product> newsList);
+
     @Delete
     void delete(Product user);
 

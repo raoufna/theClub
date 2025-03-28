@@ -51,7 +51,7 @@ public class homeFragment extends Fragment implements ResponseCallback {
         productList = new ArrayList<>();
 
         if(requireActivity().getResources().getBoolean(R.bool.debug_mode)){
-            productRepository = new ProductMockRepository();
+            productRepository = new ProductMockRepository(requireActivity().getApplication(), this);
         }else{
             productRepository = new ProductAPIRepository(requireActivity().getApplication(), this);
         }
