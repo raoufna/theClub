@@ -2,6 +2,8 @@ package com.unimib.wardrobe.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 @Entity
 public class Product {
     @PrimaryKey(autoGenerate = true)
@@ -58,6 +60,13 @@ public class Product {
             return "https://" + imageUrl;
         }
         return imageUrl;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(name, product.name) && Objects.equals(brandName, product.brandName) && Objects.equals(imageUrl, product.imageUrl);
     }
 }
 
