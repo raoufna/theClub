@@ -5,17 +5,17 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Insert;
 import androidx.room.Delete;
+import androidx.room.Update;
 
 import com.unimib.wardrobe.model.Product;
 
 
 @Dao
-public interface ProductDAO {
-    @Query("SELECT * FROM product")
-    List<Product> getAll();
+public interface ProductDAO { @Query("SELECT * FROM Product")
+List<Product> getAll();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    List<Long> insertProductList(List<Product> productList);
+    @Query("SELECT * FROM product WHERE uid = :id")
+    Product getProduct(long id);
 
     @Query("SELECT * FROM Product WHERE liked = 1")
     List<Product> getLiked();
@@ -26,19 +26,20 @@ public interface ProductDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Product> products);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insertProductList(List<Product> newsList);
 
-    @Insert
-    void insertAll(Product... users);
+    @Update
+    int updateProduct(Product product);
+
+    @Update
+    int updateListFavoriteProducts(List<Product> products);
 
     @Delete
     void delete(Product user);
 
     @Query("DELETE from Product WHERE liked = 0")
     void deleteCached();
-
-    @Query("DELETE FROM Product WHERE name = :name AND brandName = :brandName")
-    void deleteByNameAndBrand(String name, String brandName);
-
 
     @Query("DELETE from Product")
     void deleteAll();

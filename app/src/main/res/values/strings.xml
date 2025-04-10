@@ -19,4 +19,6 @@
     <string name="descrizione">Descrizione</string>
     <string name="titolo">Titolo</string>
     <string name="error_retrieving_product">impossibile caricare i prodotti</string>
+    <string name="error_retrieving_news" />
+    <string name="error_retireving_articles" />
 </resources>

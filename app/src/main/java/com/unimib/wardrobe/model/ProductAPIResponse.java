@@ -7,6 +7,13 @@ public class ProductAPIResponse {
     private long timestamp;
     private Data data;
 
+    public ProductAPIResponse(){}
+
+    public ProductAPIResponse(List<Product> products) {
+        this.data = new Data(); // inizializzi il campo data
+        this.data.setProducts(products); // poi imposti la lista
+    }
+
     public boolean isStatus() {
         return status;
     }
@@ -37,6 +44,7 @@ public class ProductAPIResponse {
         private int itemCount;
         private String redirectUrl;
         private List<Product> products;
+
 
         public String getSearchTerm() {
             return searchTerm;
