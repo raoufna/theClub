@@ -1,6 +1,7 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.source.product;
 
 import com.unimib.wardrobe.model.Product;
+import com.unimib.wardrobe.repository.product.ProductCallback;
 
 import java.util.List;
 

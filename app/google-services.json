@@ -1,26 +1,45 @@
 {
   "project_info": {
-    "project_number": "1024901192821",
-    "project_id": "pdmwardrobe",
-    "storage_bucket": "pdmwardrobe.firebasestorage.app"
+    "project_number": "766436968690",
+    "firebase_url": "https://wardrobe-12435-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "wardrobe-12435",
+    "storage_bucket": "wardrobe-12435.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1024901192821:android:55af2baa5c2f7d5747ac3c",
+        "mobilesdk_app_id": "1:766436968690:android:be55f0f204f29c1cee286b",
         "android_client_info": {
           "package_name": "com.unimib.wardrobe"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "766436968690-vtdmk2jvgbqu7bspni9brv1itmdq3d0m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unimib.wardrobe",
+            "certificate_hash": "471e06d8e1739b6e166072d5e4d6fa973990fb45"
+          }
+        },
+        {
+          "client_id": "766436968690-1tpki6oht0oglnft4jvo0nfsij56u66p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBrHds9ON734pu69_CgZ0H6DfaaiZK_M9s"
+          "current_key": "AIzaSyBX0qOA_Ind4NvloiIZHk6r_Ii2jTLLHHw"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766436968690-1tpki6oht0oglnft4jvo0nfsij56u66p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

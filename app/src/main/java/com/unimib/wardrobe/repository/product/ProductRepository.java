@@ -1,4 +1,4 @@
-package com.unimib.wardrobe.repository;
+package com.unimib.wardrobe.repository.product;
 
 import static com.unimib.wardrobe.util.Constants.FRESH_TIMEOUT;
 
@@ -8,10 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;
-import com.unimib.wardrobe.source.BaseProductLocalDataSource;
-import com.unimib.wardrobe.source.BaseProductRemoteDataSource;
-import com.unimib.wardrobe.source.ProductCallback;
 import com.unimib.wardrobe.model.Result;
+import com.unimib.wardrobe.source.product.BaseProductLocalDataSource;
+import com.unimib.wardrobe.source.product.BaseProductRemoteDataSource;
 
 import java.util.List;
 

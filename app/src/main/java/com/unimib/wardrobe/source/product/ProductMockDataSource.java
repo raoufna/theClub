@@ -1,6 +1,5 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.source.product;
 
-import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;
 import com.unimib.wardrobe.util.Constants;
 import com.unimib.wardrobe.util.JSONParserUtils;

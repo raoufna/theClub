@@ -13,4 +13,14 @@ public class Constants {
     public static final String TOP_HEADLINES_APIKEY = "rapidapi_key";
     public static final String host = "asos10.p.rapidapi.com";  // <-- Assicurati che sia giusto
     public static final String apiKey = "ebbf6e112emshc6a6e893aec837fp1d90a4jsnbe5fae02d0c3";
+
+    public static final String INVALID_USER_ERROR = "invalidUserError";
+    public static final String INVALID_CREDENTIALS_ERROR = "invalidCredentials";
+    public static final String USER_COLLISION_ERROR = "userCollisionError";
+    public static final String WEAK_PASSWORD_ERROR = "passwordIsWeak";
+    public static final String UNEXPECTED_ERROR = "unexpected_error";
+
+    public static final String FIREBASE_REALTIME_DATABASE = "https://wardrobe-12435-default-rtdb.europe-west1.firebasedatabase.app/";
+    public static final String FIREBASE_USERS_COLLECTION = "users";
+    public static final String FIREBASE_FAVORITE_NEWS_COLLECTION = "favorite_news";
 }

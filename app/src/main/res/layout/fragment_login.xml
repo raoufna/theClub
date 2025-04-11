@@ -79,4 +79,12 @@
         android:layout_height="wrap_content"
         android:text="@string/SignupButton"
         />
+    <Button
+        android:id="@+id/SignupButtonWithGoogle"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="70dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login_with_gogole"
+        />
 </LinearLayout>

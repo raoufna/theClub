@@ -1,4 +1,4 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.source.product;
 
 import com.unimib.wardrobe.database.ProductDAO;
 import com.unimib.wardrobe.database.ProductRoomDatabase;

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.unimib.wardrobe.repository.ProductRepository;
+import com.unimib.wardrobe.repository.product.ProductRepository;
 
 public class ProductViewModelFactory implements ViewModelProvider.Factory{
     private final ProductRepository productRepository;

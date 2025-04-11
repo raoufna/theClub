@@ -1,6 +1,8 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.source.product;
 
 import android.util.Log;
+
+import com.unimib.wardrobe.repository.product.ProductCallback;
 
 public abstract class BaseProductRemoteDataSource {
     protected ProductCallback productCallback;

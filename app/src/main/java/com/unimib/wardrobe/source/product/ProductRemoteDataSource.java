@@ -1,4 +1,4 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.source.product;
 
 import android.util.Log;
 
@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;
+import com.unimib.wardrobe.repository.product.ProductCallback;
 import com.unimib.wardrobe.service.ProductAPIService;
 import com.unimib.wardrobe.util.Constants;
 import com.unimib.wardrobe.util.ServiceLocator;
@@ -17,7 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProductRemoteDataSource extends BaseProductRemoteDataSource{
+public class ProductRemoteDataSource extends BaseProductRemoteDataSource {
     private final ProductAPIService productAPIService;
     private final String apiKey;
 

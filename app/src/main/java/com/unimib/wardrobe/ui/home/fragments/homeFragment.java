@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +18,9 @@ import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.adapter.ProductRecycleAdapter;
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.Result;
-import com.unimib.wardrobe.repository.ProductRepository;
+import com.unimib.wardrobe.repository.product.ProductRepository;
 import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModel;
 import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModelFactory;
-import com.unimib.wardrobe.util.ResponseCallback;
 import com.unimib.wardrobe.util.ServiceLocator;
 
 import java.util.ArrayList;
@@ -92,13 +89,13 @@ public class homeFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
 
-        productRepository.fetchProducts("jeans", 10, 1000);
+      productRepository.fetchProducts("jeans", 10, 1000);
 
 
 
         String lastUpdate = System.currentTimeMillis() + "";
         Log.d("homeFragment", "Chiamata API iniziata");
-        productViewModel.getProducts("us", Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(),
+        productViewModel.getProducts("jeans", Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(),
                 result -> {
                     Log.d("homeFragment", "Risultato della chiamata API ricevuto");
                     if (result.isSuccess()) {

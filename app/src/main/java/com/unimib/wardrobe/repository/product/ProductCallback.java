@@ -1,4 +1,4 @@
-package com.unimib.wardrobe.source;
+package com.unimib.wardrobe.repository.product;
 
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;

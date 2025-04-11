@@ -4,13 +4,19 @@ import android.app.Application;
 
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.database.ProductRoomDatabase;
-import com.unimib.wardrobe.repository.ProductRepository;
+import com.unimib.wardrobe.repository.product.ProductRepository;
+import com.unimib.wardrobe.repository.user.IUserRepository;
+import com.unimib.wardrobe.repository.user.UserRepository;
 import com.unimib.wardrobe.service.ProductAPIService;
-import com.unimib.wardrobe.source.BaseProductLocalDataSource;
-import com.unimib.wardrobe.source.BaseProductRemoteDataSource;
-import com.unimib.wardrobe.source.ProductMockDataSource;
-import com.unimib.wardrobe.source.ProductRemoteDataSource;
-import com.unimib.wardrobe.source.ProductLocalDataSource;
+import com.unimib.wardrobe.source.product.BaseProductLocalDataSource;
+import com.unimib.wardrobe.source.product.BaseProductRemoteDataSource;
+import com.unimib.wardrobe.source.product.ProductMockDataSource;
+import com.unimib.wardrobe.source.product.ProductRemoteDataSource;
+import com.unimib.wardrobe.source.product.ProductLocalDataSource;
+import com.unimib.wardrobe.source.user.BaseUserAuthenticationRemoteDataSource;
+import com.unimib.wardrobe.source.user.BaseUserDataRemoteDataSource;
+import com.unimib.wardrobe.source.user.UserAuthenticationFirebaseDataSource;
+import com.unimib.wardrobe.source.user.UserFirebaseDataSource;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -90,5 +96,20 @@ public class ServiceLocator {
         newsLocalDataSource = new ProductLocalDataSource(getProductsDao(application));
 
         return new ProductRepository(productsRemoteDataSource, newsLocalDataSource);
+    }
+
+    public IUserRepository getUserRepository(Application application) {
+
+        BaseUserAuthenticationRemoteDataSource userRemoteAuthenticationDataSource =
+                new UserAuthenticationFirebaseDataSource();
+
+        BaseUserDataRemoteDataSource userDataRemoteDataSource =
+                new UserFirebaseDataSource();
+
+        BaseProductLocalDataSource newsLocalDataSource =
+                new ProductLocalDataSource(getProductsDao(application));
+
+        return new UserRepository(userRemoteAuthenticationDataSource,
+                userDataRemoteDataSource, newsLocalDataSource);
     }
 }

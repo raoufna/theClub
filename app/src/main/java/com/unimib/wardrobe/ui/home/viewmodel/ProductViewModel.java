@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.Result;
-import com.unimib.wardrobe.repository.ProductRepository;
+import com.unimib.wardrobe.repository.product.ProductRepository;
 
 
 
