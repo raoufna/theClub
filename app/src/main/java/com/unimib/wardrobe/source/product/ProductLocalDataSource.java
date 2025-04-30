@@ -1,5 +1,7 @@
 package com.unimib.wardrobe.source.product;
 
+import androidx.lifecycle.LiveData;
+
 import com.unimib.wardrobe.database.ProductDAO;
 import com.unimib.wardrobe.database.ProductRoomDatabase;
 import com.unimib.wardrobe.model.Product;
@@ -65,6 +67,10 @@ public class ProductLocalDataSource extends BaseProductLocalDataSource {
                 productCallback.onFailureFromLocal(new Exception("UNEXPECTED_ERROR"));
             }
         });
+    }
+
+    public LiveData<List<Product>> getLikedProducts() {
+        return productDAO.getLikedLive();
     }
 
     /**

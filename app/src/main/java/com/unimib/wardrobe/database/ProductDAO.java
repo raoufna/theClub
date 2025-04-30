@@ -1,5 +1,7 @@
 package com.unimib.wardrobe.database;
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -19,6 +21,9 @@ List<Product> getAll();
 
     @Query("SELECT * FROM Product WHERE liked = 1")
     List<Product> getLiked();
+
+    @Query("SELECT * FROM Product WHERE liked = 1")
+    LiveData<List<Product>> getLikedLive();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Product... products);

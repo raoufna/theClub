@@ -1,5 +1,6 @@
 package com.unimib.wardrobe.ui.home.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -7,6 +8,7 @@ import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.Result;
 import com.unimib.wardrobe.repository.product.ProductRepository;
 
+import java.util.List;
 
 
 public class ProductViewModel extends ViewModel {
@@ -47,6 +49,9 @@ public class ProductViewModel extends ViewModel {
 
     private void getFavoriteProducts() {
         favoriteNewsListLiveData = productRepository.getFavoriteNews();
+    }
+    public LiveData<List<Product>> getLikedProducts() {
+        return productRepository.getLikedProducts();
     }
 
     public void removeFromFavorite(Product product) {

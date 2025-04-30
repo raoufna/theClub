@@ -2,6 +2,7 @@ package com.unimib.wardrobe.ui.home.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -14,8 +15,16 @@ import android.view.ViewGroup;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.adapter.ProductRecycleAdapter;
+import com.unimib.wardrobe.database.ProductRoomDatabase;
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.Result;
 import com.unimib.wardrobe.repository.product.ProductRepository;
@@ -102,6 +111,38 @@ public class homeFragment extends Fragment {
                         int initialSize = this.productList.size();
                         this.productList.clear();
                         this.productList.addAll(((Result.Success) result).getData().getData().getProducts());
+                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                        if (currentUser != null) {
+                            DatabaseReference favoritesRef = FirebaseDatabase.getInstance()
+                                    .getReference("users")
+                                    .child(currentUser.getUid())
+                                    .child("preferiti");
+
+                            favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot productSnapshot : snapshot.getChildren()) {
+                                        String productName = productSnapshot.child("name").getValue(String.class);
+
+                                        for (Product p : productList) {
+                                            if (p.getName().equals((productName))) {
+                                                p.setLiked(true);
+
+                                                // Sincronizza anche su Room
+                                                ProductRoomDatabase.getDatabase(requireContext())
+                                                        .ProductDao().insert(p);
+                                            }
+                                        }
+                                    }
+                                    adapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("FirebaseSync", "Errore nella lettura dei preferiti", error.toException());
+                                }
+                            });
+                        }
                         adapter.notifyItemRangeInserted(initialSize, this.productList.size());
                         recyclerView.setVisibility(View.VISIBLE);
                         circularProgressIndicator.setVisibility(View.GONE);

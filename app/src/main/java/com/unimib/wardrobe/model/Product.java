@@ -24,6 +24,10 @@ public class Product {
         this.uid = uid;
     }
 
+    public String getUidString() {
+        return String.valueOf(uid); // uid è il long
+    }
+
     public boolean getLiked() {
         return liked;
     }

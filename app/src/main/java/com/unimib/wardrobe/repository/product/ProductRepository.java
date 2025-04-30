@@ -4,6 +4,7 @@ import static com.unimib.wardrobe.util.Constants.FRESH_TIMEOUT;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.unimib.wardrobe.model.Product;
@@ -124,4 +125,7 @@ public class ProductRepository implements ProductCallback {
                 favoriteProductsMutableLiveData.postValue(result);
             }
         }
+    public LiveData<List<Product>> getLikedProducts() {
+        return ProductLocalDataSource.getLikedProducts();
+    }
 }
