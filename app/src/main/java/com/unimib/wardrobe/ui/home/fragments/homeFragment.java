@@ -26,6 +26,7 @@ import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.adapter.ProductRecycleAdapter;
 import com.unimib.wardrobe.database.ProductRoomDatabase;
 import com.unimib.wardrobe.model.Product;
+import com.unimib.wardrobe.model.ProductAPIResponse;
 import com.unimib.wardrobe.model.Result;
 import com.unimib.wardrobe.repository.product.ProductRepository;
 import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModel;
@@ -33,6 +34,7 @@ import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModelFactory;
 import com.unimib.wardrobe.util.ServiceLocator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class homeFragment extends Fragment {
@@ -98,61 +100,76 @@ public class homeFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
 
-      productRepository.fetchProducts("jeans", 10, 1000);
 
 
+        List<String> searchTerms = Arrays.asList("jeans", "tshirt", "sneakers");
+        String lastUpdate = "0";
 
-        String lastUpdate = System.currentTimeMillis() + "";
-        Log.d("homeFragment", "Chiamata API iniziata");
-        productViewModel.getProducts("jeans", Long.parseLong(lastUpdate)).observe(getViewLifecycleOwner(),
-                result -> {
-                    Log.d("homeFragment", "Risultato della chiamata API ricevuto");
-                    if (result.isSuccess()) {
-                        int initialSize = this.productList.size();
-                        this.productList.clear();
-                        this.productList.addAll(((Result.Success) result).getData().getData().getProducts());
-                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                        if (currentUser != null) {
-                            DatabaseReference favoritesRef = FirebaseDatabase.getInstance()
-                                    .getReference("users")
-                                    .child(currentUser.getUid())
-                                    .child("preferiti");
+        // Osserva il LiveData che restituisce il risultato combinato
+        productViewModel.getCombinedProducts(searchTerms, Long.parseLong(lastUpdate))
+                .observe(getViewLifecycleOwner(), combinedResult -> {
+                    if (combinedResult instanceof Result.Success) {
+                        // Ottieni la risposta combinata, devi fare il cast alla classe ProductAPIResponse
+                        ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
 
-                            favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    for (DataSnapshot productSnapshot : snapshot.getChildren()) {
-                                        String productName = productSnapshot.child("name").getValue(String.class);
+                        if (combinedResponse != null) {
+                            List<Product> allProducts = combinedResponse.getData().getProducts();
 
-                                        for (Product p : productList) {
-                                            if (p.getName().equals((productName))) {
-                                                p.setLiked(true);
+                            // Aggiungi i prodotti alla lista
+                            productList.clear();
+                            productList.addAll(allProducts);
 
-                                                // Sincronizza anche su Room
-                                                ProductRoomDatabase.getDatabase(requireContext())
-                                                        .ProductDao().insert(p);
+                            // Sincronizza i preferiti con Firebase e Room
+                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            if (currentUser != null) {
+                                DatabaseReference favoritesRef = FirebaseDatabase.getInstance()
+                                        .getReference("users")
+                                        .child(currentUser.getUid())
+                                        .child("preferiti");
+
+                                favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for (DataSnapshot productSnapshot : snapshot.getChildren()) {
+                                            String productName = productSnapshot.child("name").getValue(String.class);
+
+                                            // Sincronizza con i prodotti della lista
+                                            for (Product p : productList) {
+                                                if (p.getName().equals(productName)) {
+                                                    p.setLiked(true);
+
+                                                    // Sincronizza anche con Room
+                                                    ProductRoomDatabase.getDatabase(requireContext())
+                                                            .ProductDao().insert(p);
+                                                }
                                             }
                                         }
+                                        // Notifica che i dati sono cambiati e aggiorna la UI
+                                        adapter.notifyDataSetChanged();
                                     }
-                                    adapter.notifyDataSetChanged();
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("FirebaseSync", "Errore nella lettura dei preferiti", error.toException());
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("FirebaseSync", "Errore nella lettura dei preferiti", error.toException());
+                                    }
+                                });
+                            }
+
+                            // Notifica la fine del caricamento e mostra la RecyclerView
+                            recyclerView.setVisibility(View.VISIBLE);
+                            circularProgressIndicator.setVisibility(View.GONE);
+                            Log.d("homeFragment", "Dati caricati e aggiornati");
                         }
-                        adapter.notifyItemRangeInserted(initialSize, this.productList.size());
-                        recyclerView.setVisibility(View.VISIBLE);
-                        circularProgressIndicator.setVisibility(View.GONE);
-                        Log.d("homeFragment", "Dati caricati, cerchiolino nascosto");
-                    } else {
+                    } else if (combinedResult instanceof Result.Error) {
+                        // In caso di errore, mostra un messaggio di errore
                         Snackbar.make(view,
                                 getString(R.string.error_retireving_articles),
                                 Snackbar.LENGTH_SHORT).show();
+                        recyclerView.setVisibility(View.GONE);
+                        circularProgressIndicator.setVisibility(View.GONE);
                     }
                 });
+
 
         return view;
     }

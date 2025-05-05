@@ -36,22 +36,114 @@ public class ProductRepository implements ProductCallback {
             this.ProductLocalDataSource.setProductCallback(this);
         }
 
-        public MutableLiveData<Result> fetchProducts(String searchTerm, int page, long lastUpdate) {
-            long currentTime = System.currentTimeMillis();
+    public LiveData<Result> fetchProducts(String searchTerm, int page, long lastUpdate) {
+        MutableLiveData<Result> resultLiveData = new MutableLiveData<>();
+        long currentTime = System.currentTimeMillis();
 
-            // It gets the news from the Web Service if the last download
-            // of the news has been performed more than FRESH_TIMEOUT value ago
-            if (currentTime - lastUpdate > FRESH_TIMEOUT) {
-                Log.d("DEBUG", "fetchProducts chiamato con: " + searchTerm);
-                ProductRemoteDataSource.getProducts(searchTerm);
-            } else {
-                ProductLocalDataSource.getProducts();
-            }
+        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+            Log.d("DEBUG", "fetchProducts chiamato con: " + searchTerm);
 
-            return allProductsMutableLiveData;
+            // Imposta il callback prima di avviare la richiesta
+            ProductRemoteDataSource.setProductCallback(new ProductCallback() {
+                @Override
+                public void onSuccessFromRemote(ProductAPIResponse productAPIResponse, long lastUpdate) {
+                    Log.d("DEBUG", "✅ SUCCESS: prodotti ricevuti");
+                    resultLiveData.postValue(new Result.Success(productAPIResponse));
+                }
+
+                @Override
+                public void onFailureFromRemote(Exception exception) {
+                    Log.e("DEBUG", "❌ FAILURE: errore nella chiamata", exception);
+                    resultLiveData.postValue(new Result.Error(exception.getMessage()));
+                }
+
+                @Override
+                public void onSuccessFromLocal(List<Product> productsList) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onFailureFromLocal(Exception exception) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onNewsFavoriteStatusChanged(Product news, List<Product> favoriteNews) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onNewsFavoriteStatusChanged(List<Product> news) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onDeleteFavoriteNewsSuccess(List<Product> favoriteNews) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+            });
+
+            // Avvia la chiamata
+            ProductRemoteDataSource.getProducts(searchTerm);
+
+        } else {
+            Log.d("DEBUG", "Prendo dati in locale");
+            // Anche qui stessa cosa: LiveData va popolata da ProductLocalDataSource
+            ProductLocalDataSource.setProductCallback(new ProductCallback() {
+                @Override
+                public void onSuccessFromLocal(List<Product> productsList) {
+                    // Crea un ProductAPIResponse e inserisci la lista di prodotti in "Data"
+                    ProductAPIResponse productAPIResponse = new ProductAPIResponse();
+                    ProductAPIResponse.Data data = new ProductAPIResponse.Data();
+                    data.setProducts(productsList); // Imposta i prodotti ricevuti
+                    productAPIResponse.setData(data); // Imposta i dati nel response
+
+                    // Ora puoi passare l'oggetto ProductAPIResponse
+                    resultLiveData.postValue(new Result.Success(productAPIResponse));// Assicurati di passare i prodotti correttamente
+                }
+
+                @Override
+                public void onFailureFromLocal(Exception exception) {
+                    Log.e("DEBUG", "❌ FAILURE LOCAL: errore nella lettura locale", exception);
+                    resultLiveData.postValue(new Result.Error(exception.getMessage()));
+                }
+
+                @Override
+                public void onSuccessFromRemote(ProductAPIResponse productAPIResponse, long lastUpdate) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onFailureFromRemote(Exception exception) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onNewsFavoriteStatusChanged(Product news, List<Product> favoriteNews) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onNewsFavoriteStatusChanged(List<Product> news) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+
+                @Override
+                public void onDeleteFavoriteNewsSuccess(List<Product> favoriteNews) {
+                    // Implementazione vuota per non utilizzare questo metodo
+                }
+            });
+
+            ProductLocalDataSource.getProducts();
         }
 
-        public MutableLiveData<Result> getFavoriteNews() {
+        return resultLiveData;
+    }
+
+
+
+
+    public MutableLiveData<Result> getFavoriteNews() {
 
             ProductLocalDataSource.getFavoriteProducts();
             return favoriteProductsMutableLiveData;

@@ -3,6 +3,8 @@ package com.unimib.wardrobe.util;
 public class Constants {
 
     public static final String JsonWardrobe = "JsonWardrobe.json";
+    public static final String JsonWardrobeTshirt = "JsonWardrobeTshirt.json";
+    public static final String JsonWardrobePants = "JsonWardrobePants.json";
     public static final int DATABASE_VERSION = 3;
     public static final String SAVED_ProductS_DATABASE = "saved_db";
     public static final int FRESH_TIMEOUT = 1000 * 60;
