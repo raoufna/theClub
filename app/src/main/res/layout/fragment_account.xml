@@ -6,73 +6,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp"
     tools:context=".ui.home.fragments.homeFragment">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
 
-    <LinearLayout
-        android:id="@+id/user_info"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/profile_initial"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:textSize="36sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/circle_background"
+        android:padding="8dp"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/email_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+        android:text="@string/exampleMail"
+        android:textSize="18sp"
+        android:textColor="@android:color/black" />
 
-        <!-- Circular Initial -->
-        <TextView
-            android:id="@+id/profile_initial"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:text="A"
-            android:textSize="24sp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/circle_background"
-            android:layout_marginEnd="16dp"
-            android:padding="4dp" />
-
-        <!-- Email Text -->
-        <TextView
-            android:id="@+id/email_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="example@email.com"
-            android:textSize="18sp"
-            android:textColor="#000000" />
-    </LinearLayout>
 
     <View
-        android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+        android:layout_height="15dp"
+        android:background="@color/md_theme_inversePrimary"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
 
     <LinearLayout
         android:id="@+id/logout_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="12dp"
-        android:gravity="center_vertical"
-        android:padding="12dp"
+        android:gravity="center_horizontal"
         android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:background="#EFEFEF"
-        android:layout_marginBottom="12dp">
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/logout_icon" />
 
         <TextView
             android:id="@+id/logout_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
-            android:textColor="#FF0000"
-            android:textSize="16sp" />
+            android:textSize="17sp" />
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="@color/md_theme_inversePrimary"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:id="@+id/favorites_title"
@@ -84,6 +80,7 @@
         android:gravity="center"
         android:paddingTop="12dp"
         android:paddingBottom="8dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
