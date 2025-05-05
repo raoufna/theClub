@@ -1,11 +1,14 @@
 package com.unimib.wardrobe.source.product;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 
 import com.unimib.wardrobe.database.ProductDAO;
 import com.unimib.wardrobe.database.ProductRoomDatabase;
 import com.unimib.wardrobe.model.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductLocalDataSource extends BaseProductLocalDataSource {
@@ -23,7 +26,15 @@ public class ProductLocalDataSource extends BaseProductLocalDataSource {
     @Override
     public void getProducts() {
         ProductRoomDatabase.databaseWriteExecutor.execute(() -> {
-            productCallback.onSuccessFromLocal(productDAO.getAll());
+            List<Product> products = productDAO.getAll();
+            if (products != null && !products.isEmpty()) {
+                productCallback.onSuccessFromLocal(products);
+                Log.d("ProductLocalDataSource", " prodotti trovato nel database locale.");
+
+            } else {
+                Log.d("ProductLocalDataSource", "Nessun prodotto trovato nel database locale.");
+                productCallback.onSuccessFromLocal(new ArrayList<>()); // O eventualmente un altro tipo di gestione
+            }
         });
     }
 
@@ -81,38 +92,27 @@ public class ProductLocalDataSource extends BaseProductLocalDataSource {
      */
     @Override
     public void insertProducts(List<Product> productsList) {
+        Log.d("ProductLocalDataSource", "Metodo insertProducts chiamato");
         ProductRoomDatabase.databaseWriteExecutor.execute(() -> {
             // Reads the news from the database
+            Log.d("ProductLocalDataSource", "Inizio salvataggio prodotti");
             List<Product> allProducts = productDAO.getAll();
 
             if (productsList != null) {
-
-                // Checks if the news just downloaded has already been downloaded earlier
-                // in order to preserve the news status (marked as favorite or not)
+                Log.d("ProductLocalDataSource", "Prodotti da inserire: " + productsList.size());
                 for (Product product : allProducts) {
-                    // This check works because News and NewsSource classes have their own
-                    // implementation of equals(Object) and hashCode() methods
                     if (productsList.contains(product)) {
-                        // The primary key and the favorite status is contained only in the News objects
-                        // retrieved from the database, and not in the News objects downloaded from the
-                        // Web Service. If the same news was already downloaded earlier, the following
-                        // line of code replaces the News object in newsList with the corresponding
-                        // line of code replaces the News object in newsList with the corresponding
-                        // News object saved in the database, so that it has the primary key and the
-                        // favorite status.
                         productsList.set(productsList.indexOf(product), product);
                     }
                 }
-
-                // Writes the news in the database and gets the associated primary keys
                 List<Long> insertedNewsIds = productDAO.insertProductList(productsList);
                 for (int i = 0; i < productsList.size(); i++) {
-                    // Adds the primary key to the corresponding object News just downloaded so that
-                    // if the user marks the news as favorite (and vice-versa), we can use its id
-                    // to know which news in the database must be marked as favorite/not favorite
                     productsList.get(i).setUid(insertedNewsIds.get(i));
                 }
+                Log.d("ProductLocalDataSource", "Prodotti inseriti: " + productsList.size());
                 productCallback.onSuccessFromLocal(productsList);
+            } else {
+                Log.e("ProductLocalDataSource", "La lista di prodotti è nulla");
             }
         });
     }

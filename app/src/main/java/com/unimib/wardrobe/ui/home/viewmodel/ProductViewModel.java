@@ -23,6 +23,7 @@ public class ProductViewModel extends ViewModel {
     private MutableLiveData<Result> productsListMutableLiveData;
     private LiveData<Result> productsListLiveData;
     private MutableLiveData<Result> favoriteNewsListLiveData;
+    private final MutableLiveData<Result> combinedLiveData = new MutableLiveData<>();
 
     public ProductViewModel(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -68,7 +69,10 @@ public class ProductViewModel extends ViewModel {
         productRepository.deleteFavoriteProducts();
     }
 
-    public LiveData<Result> getCombinedProducts(List<String> searchTerms, long lastUpdate) {
+    public LiveData<Result> getCombinedProducts() {
+        return combinedLiveData;
+    }
+    /*public LiveData<Result> getCombinedProducts(List<String> searchTerms, long lastUpdate) {
         MutableLiveData<Result> combinedLiveData = new MutableLiveData<>();
         List<Product> combinedList = new ArrayList<>();
 
@@ -98,6 +102,30 @@ public class ProductViewModel extends ViewModel {
         }
 
         return combinedLiveData;
+    }*/
+    public void fetchCombinedProducts(List<String> searchTerms, long lastUpdate) {
+        List<Product> combinedList = new ArrayList<>();
+        AtomicInteger responsesCount = new AtomicInteger(0);
+
+        for (String searchTerm : searchTerms) {
+            productRepository.fetchProducts(searchTerm, 10, lastUpdate)
+                    .observeForever(result -> {
+                        if (result instanceof Result.Success) {
+                            ProductAPIResponse response = ((Result.Success) result).getData();
+                            if (response != null && response.getData() != null) {
+                                List<Product> products = response.getData().getProducts();
+                                if (products != null) {
+                                    combinedList.addAll(products);
+                                }
+                            }
+                        }
+
+                        if (responsesCount.incrementAndGet() == searchTerms.size()) {
+                            ProductAPIResponse combinedResponse = new ProductAPIResponse(combinedList);
+                            combinedLiveData.postValue(new Result.Success(combinedResponse));
+                        }
+                    });
+        }
     }
 
 

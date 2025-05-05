@@ -7,7 +7,7 @@ public class Constants {
     public static final String JsonWardrobePants = "JsonWardrobePants.json";
     public static final int DATABASE_VERSION = 3;
     public static final String SAVED_ProductS_DATABASE = "saved_db";
-    public static final int FRESH_TIMEOUT = 1000 * 60;
+    public static final int FRESH_TIMEOUT = 1000*60;
 
     public static final String RAPID_API_BASE_URL = "https://asos10.p.rapidapi.com/api/v1/";
     public static final String TOP_HEADLINES_ENDPOINT = "getProductListBySearchTerm";

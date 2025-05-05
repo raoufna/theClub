@@ -95,7 +95,7 @@ public class ServiceLocator {
 
         newsLocalDataSource = new ProductLocalDataSource(getProductsDao(application));
 
-        return new ProductRepository(productsRemoteDataSource, newsLocalDataSource);
+        return new ProductRepository(application.getApplicationContext(), productsRemoteDataSource, newsLocalDataSource);
     }
 
     public IUserRepository getUserRepository(Application application) {

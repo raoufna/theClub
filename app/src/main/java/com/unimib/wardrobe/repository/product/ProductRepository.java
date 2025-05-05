@@ -2,6 +2,8 @@ package com.unimib.wardrobe.repository.product;
 
 import static com.unimib.wardrobe.util.Constants.FRESH_TIMEOUT;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -23,10 +25,13 @@ public class ProductRepository implements ProductCallback {
         private final MutableLiveData<Result> favoriteProductsMutableLiveData;
         private final BaseProductRemoteDataSource ProductRemoteDataSource;
         private final BaseProductLocalDataSource ProductLocalDataSource;
+        private final Context context;
 
-        public ProductRepository(BaseProductRemoteDataSource ProductRemoteDataSource,
+
+    public ProductRepository(Context context, BaseProductRemoteDataSource ProductRemoteDataSource,
                                  BaseProductLocalDataSource ProductLocalDataSource) {
 
+            this.context = context.getApplicationContext();
             allProductsMutableLiveData = new MutableLiveData<>();
             favoriteProductsMutableLiveData = new MutableLiveData<>();
             this.ProductRemoteDataSource = ProductRemoteDataSource;
@@ -35,6 +40,8 @@ public class ProductRepository implements ProductCallback {
             Log.d("DEBUG", "ProductRepository creato con callback: " + this);
             this.ProductLocalDataSource.setProductCallback(this);
         }
+
+
 
     public LiveData<Result> fetchProducts(String searchTerm, int page, long lastUpdate) {
         MutableLiveData<Result> resultLiveData = new MutableLiveData<>();
@@ -47,8 +54,12 @@ public class ProductRepository implements ProductCallback {
             ProductRemoteDataSource.setProductCallback(new ProductCallback() {
                 @Override
                 public void onSuccessFromRemote(ProductAPIResponse productAPIResponse, long lastUpdate) {
-                    Log.d("DEBUG", "✅ SUCCESS: prodotti ricevuti");
                     resultLiveData.postValue(new Result.Success(productAPIResponse));
+                    Log.d("DEBUG", "✅ SUCCESS: Dati ricevuti, chiamata a insertProducts");
+                    ProductLocalDataSource.insertProducts(productAPIResponse.getData().getProducts());
+                    long now = System.currentTimeMillis();
+                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+                    prefs.edit().putLong("last_update_timestamp", now).apply();
                 }
 
                 @Override
@@ -87,53 +98,6 @@ public class ProductRepository implements ProductCallback {
             ProductRemoteDataSource.getProducts(searchTerm);
 
         } else {
-            Log.d("DEBUG", "Prendo dati in locale");
-            // Anche qui stessa cosa: LiveData va popolata da ProductLocalDataSource
-            ProductLocalDataSource.setProductCallback(new ProductCallback() {
-                @Override
-                public void onSuccessFromLocal(List<Product> productsList) {
-                    // Crea un ProductAPIResponse e inserisci la lista di prodotti in "Data"
-                    ProductAPIResponse productAPIResponse = new ProductAPIResponse();
-                    ProductAPIResponse.Data data = new ProductAPIResponse.Data();
-                    data.setProducts(productsList); // Imposta i prodotti ricevuti
-                    productAPIResponse.setData(data); // Imposta i dati nel response
-
-                    // Ora puoi passare l'oggetto ProductAPIResponse
-                    resultLiveData.postValue(new Result.Success(productAPIResponse));// Assicurati di passare i prodotti correttamente
-                }
-
-                @Override
-                public void onFailureFromLocal(Exception exception) {
-                    Log.e("DEBUG", "❌ FAILURE LOCAL: errore nella lettura locale", exception);
-                    resultLiveData.postValue(new Result.Error(exception.getMessage()));
-                }
-
-                @Override
-                public void onSuccessFromRemote(ProductAPIResponse productAPIResponse, long lastUpdate) {
-                    // Implementazione vuota per non utilizzare questo metodo
-                }
-
-                @Override
-                public void onFailureFromRemote(Exception exception) {
-                    // Implementazione vuota per non utilizzare questo metodo
-                }
-
-                @Override
-                public void onNewsFavoriteStatusChanged(Product news, List<Product> favoriteNews) {
-                    // Implementazione vuota per non utilizzare questo metodo
-                }
-
-                @Override
-                public void onNewsFavoriteStatusChanged(List<Product> news) {
-                    // Implementazione vuota per non utilizzare questo metodo
-                }
-
-                @Override
-                public void onDeleteFavoriteNewsSuccess(List<Product> favoriteNews) {
-                    // Implementazione vuota per non utilizzare questo metodo
-                }
-            });
-
             ProductLocalDataSource.getProducts();
         }
 
@@ -158,7 +122,6 @@ public class ProductRepository implements ProductCallback {
         }
 
         public void onSuccessFromRemote(ProductAPIResponse ProductApiResponse, long lastUpdate) {
-            Log.d("DEBUG", "onSuccessFromRemote chiamato con i dati ricevuti.");
             ProductLocalDataSource.insertProducts(ProductApiResponse.getData().getProducts());
         }
 
@@ -169,6 +132,7 @@ public class ProductRepository implements ProductCallback {
         }
 
         public void onSuccessFromLocal(List<Product> ProductList) {
+            Log.d("ProductLocalDataSource", "Prodotti caricati dal database locale: " + ProductList.size());
             Result.Success result = new Result.Success(new ProductAPIResponse(ProductList));
             allProductsMutableLiveData.postValue(result);
         }
