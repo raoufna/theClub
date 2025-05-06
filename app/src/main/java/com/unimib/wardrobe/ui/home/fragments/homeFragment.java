@@ -1,5 +1,7 @@
 package com.unimib.wardrobe.ui.home.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -72,96 +74,58 @@ public class homeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView = view.findViewById(R.id.recycleView);
         circularProgressIndicator = view.findViewById(R.id.progressIndicator);
 
-        //recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        // Impostiamo il layout della RecyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
 
-        adapter = new ProductRecycleAdapter(R.layout.card_item,
-                productList, true/*, new ProductRecycleAdapter.OnItemClickListener() {*/
+        adapter = new ProductRecycleAdapter(R.layout.card_item, productList, true);
+        recyclerView.setAdapter(adapter);
 
-
-
-
-         );
-         /*@Override
-            public void onFavoriteButtonPressed(int position) {
-                productList.get(position).setLiked(!productList.get(position).getLiked());
-                ProductViewModel.updateProduct(productList.get(position));
-            }*/
-
-        //productRepository.getFavoriteProduct();
+        // Mostriamo il progress indicator mentre carichiamo i dati
         circularProgressIndicator.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
 
-        recyclerView.setAdapter(adapter);
-
-
-
         List<String> searchTerms = Arrays.asList("jeans", "tshirt", "sneakers");
-        String lastUpdate = "0";
 
-        // Osserva il LiveData che restituisce il risultato combinato
-        productViewModel.getCombinedProducts(searchTerms, Long.parseLong(lastUpdate))
-                .observe(getViewLifecycleOwner(), combinedResult -> {
+        SharedPreferences prefs = requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+        long lastUpdate = prefs.getLong("last_update_timestamp", 0);
+        Log.d("ProductLocalDataSource", "DEBUG MIO ");
+
+        productViewModel.fetchCombinedProducts(searchTerms, lastUpdate);
+        productViewModel.getCombinedProducts().observe(getViewLifecycleOwner(), combinedResult -> {
+                    if (combinedResult != null) {
+                        Log.d("ProductLocalDataSource", "DEBUG tipo result: " + combinedResult.getClass().getSimpleName());
+                    } else {
+                        Log.d("ProductLocalDataSource", "DEBUG tipo result: NULL");
+                    }
                     if (combinedResult instanceof Result.Success) {
-                        // Ottieni la risposta combinata, devi fare il cast alla classe ProductAPIResponse
                         ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
 
                         if (combinedResponse != null) {
                             List<Product> allProducts = combinedResponse.getData().getProducts();
 
-                            // Aggiungi i prodotti alla lista
+                            // Aggiungi i nuovi prodotti alla lista
+                            Log.d("ProductLocalDataSource", "Prodotti ricevuti dalla LiveData: " + allProducts.size());
                             productList.clear();
                             productList.addAll(allProducts);
 
                             // Sincronizza i preferiti con Firebase e Room
-                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                            if (currentUser != null) {
-                                DatabaseReference favoritesRef = FirebaseDatabase.getInstance()
-                                        .getReference("users")
-                                        .child(currentUser.getUid())
-                                        .child("preferiti");
+                            syncFavoritesWithFirebaseAndRoom(allProducts);
 
-                                favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for (DataSnapshot productSnapshot : snapshot.getChildren()) {
-                                            String productName = productSnapshot.child("name").getValue(String.class);
+                            // Aggiorna la RecyclerView
+                            adapter.notifyDataSetChanged();
 
-                                            // Sincronizza con i prodotti della lista
-                                            for (Product p : productList) {
-                                                if (p.getName().equals(productName)) {
-                                                    p.setLiked(true);
-
-                                                    // Sincronizza anche con Room
-                                                    ProductRoomDatabase.getDatabase(requireContext())
-                                                            .ProductDao().insert(p);
-                                                }
-                                            }
-                                        }
-                                        // Notifica che i dati sono cambiati e aggiorna la UI
-                                        adapter.notifyDataSetChanged();
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("FirebaseSync", "Errore nella lettura dei preferiti", error.toException());
-                                    }
-                                });
-                            }
-
-                            // Notifica la fine del caricamento e mostra la RecyclerView
+                            // Nascondi il progress indicator e mostra la RecyclerView
                             recyclerView.setVisibility(View.VISIBLE);
                             circularProgressIndicator.setVisibility(View.GONE);
-                            Log.d("homeFragment", "Dati caricati e aggiornati");
+
+                            Log.d("ProductLocalDataSource", "Dati caricati e aggiornati");
                         }
                     } else if (combinedResult instanceof Result.Error) {
-                        // In caso di errore, mostra un messaggio di errore
                         Snackbar.make(view,
                                 getString(R.string.error_retireving_articles),
                                 Snackbar.LENGTH_SHORT).show();
@@ -170,7 +134,78 @@ public class homeFragment extends Fragment {
                     }
                 });
 
-
         return view;
     }
+
+    private void syncFavoritesWithFirebaseAndRoom(List<Product> allProducts) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            DatabaseReference favoritesRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(currentUser.getUid())
+                    .child("preferiti");
+
+            favoritesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot productSnapshot : snapshot.getChildren()) {
+                        String productName = productSnapshot.child("name").getValue(String.class);
+
+                        // Sincronizza con i prodotti della lista
+                        for (Product p : allProducts) {
+                            if (p.getName().equals(productName)) {
+                                p.setLiked(true);
+
+                                // Sincronizza anche con Room
+                                ProductRoomDatabase.getDatabase(requireContext())
+                                        .ProductDao().insert(p);
+                            }
+                        }
+                    }
+
+                    // Dopo aver sincronizzato i preferiti, aggiorna la UI
+                    adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("FirebaseSync", "Errore nella lettura dei preferiti", error.toException());
+                }
+            });
+        }
+    }
+    /*
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        List<String> searchTerms = Arrays.asList("jeans", "tshirt", "sneakers");
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
+        long lastUpdate = prefs.getLong("last_update_timestamp", 0);
+        productViewModel.getCombinedProducts(searchTerms, lastUpdate)
+                .observe(getViewLifecycleOwner(), combinedResult -> {
+                    if (combinedResult instanceof Result.Success) {
+                        ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
+
+                        if (combinedResponse != null) {
+                            List<Product> allProducts = combinedResponse.getData().getProducts();
+                            Log.d("ProductLocalDataSource", "Prodotti ricevuti dalla LiveData: " + allProducts.size());
+
+                            productList.clear();
+                            productList.addAll(allProducts);
+
+                            syncFavoritesWithFirebaseAndRoom(allProducts);
+                            adapter.notifyDataSetChanged();
+
+                            recyclerView.setVisibility(View.VISIBLE);
+                            circularProgressIndicator.setVisibility(View.GONE);
+                            Log.d("ProductLocalDataSource", "Dati caricati e aggiornati");
+                        }
+                    } else if (combinedResult instanceof Result.Error) {
+                        recyclerView.setVisibility(View.GONE);
+                        circularProgressIndicator.setVisibility(View.GONE);
+                    }
+                });
+    }*/
 }
