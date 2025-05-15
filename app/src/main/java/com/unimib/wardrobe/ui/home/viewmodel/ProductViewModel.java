@@ -69,52 +69,28 @@ public class ProductViewModel extends ViewModel {
         productRepository.deleteFavoriteProducts();
     }
 
-    public LiveData<Result> getCombinedProducts() {
+    public LiveData<Result> getCombinedProducts(List<String> searchTerms, long lastUpdate) {
         return combinedLiveData;
     }
-    /*public LiveData<Result> getCombinedProducts(List<String> searchTerms, long lastUpdate) {
-        MutableLiveData<Result> combinedLiveData = new MutableLiveData<>();
-        List<Product> combinedList = new ArrayList<>();
-
-        // Lista per tenere traccia di quante risposte abbiamo ricevuto
-        AtomicInteger responsesCount = new AtomicInteger(0);
-
-        for (String searchTerm : searchTerms) {
-            productRepository.fetchProducts(searchTerm, 10, lastUpdate)
-                    .observeForever(result -> {
-                        if (result instanceof Result.Success) {
-                            ProductAPIResponse response = ((Result.Success) result).getData();
-                            if (response != null && response.getData() != null) {
-                                List<Product> products = response.getData().getProducts();
-                                if (products != null) {
-                                    combinedList.addAll(products);
-                                }
-                            }
-                        }
-
-                        // Controlla se abbiamo ricevuto tutte le risposte
-                        if (responsesCount.incrementAndGet() == searchTerms.size()) {
-                            // Quando tutte le richieste sono completate, aggiorniamo il LiveData
-                            ProductAPIResponse combinedResponse = new ProductAPIResponse(combinedList);
-                            combinedLiveData.setValue(new Result.Success(combinedResponse));
-                        }
-                    });
-        }
-
-        return combinedLiveData;
-    }*/
     public void fetchCombinedProducts(List<String> searchTerms, long lastUpdate) {
         List<Product> combinedList = new ArrayList<>();
         AtomicInteger responsesCount = new AtomicInteger(0);
 
         for (String searchTerm : searchTerms) {
-            productRepository.fetchProducts(searchTerm, 10, lastUpdate)
+            // Crea una variabile finale per catturare il valore corretto
+            final String currentSearchTerm = searchTerm;
+
+            productRepository.fetchProducts(currentSearchTerm, 10, lastUpdate)
                     .observeForever(result -> {
                         if (result instanceof Result.Success) {
                             ProductAPIResponse response = ((Result.Success) result).getData();
                             if (response != null && response.getData() != null) {
                                 List<Product> products = response.getData().getProducts();
                                 if (products != null) {
+                                    // Usa currentSearchTerm invece della variabile del loop
+                                    for (Product product : products) {
+                                        product.setSearchTerm(currentSearchTerm);
+                                    }
                                     combinedList.addAll(products);
                                 }
                             }
@@ -127,6 +103,5 @@ public class ProductViewModel extends ViewModel {
                     });
         }
     }
-
 
 }
