@@ -16,30 +16,43 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
         android:elevation="4dp"
         app:cardCornerRadius="12dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
-    <TextView
-        android:id="@+id/profile_initial"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:gravity="center"
-        android:textSize="36sp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/circle_background"
-        android:padding="8dp"
-        android:layout_marginBottom="12dp" />
 
-    <TextView
-        android:id="@+id/email_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/exampleMail"
-        android:textSize="18sp"
-        android:textColor="@android:color/black" />
+        <LinearLayout
+            android:id="@+id/profile_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="20dp"
+            android:foreground="?attr/selectableItemBackground">
 
+            <TextView
+                android:id="@+id/profile_initial"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:textSize="36sp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/circle_background"
+                android:padding="8dp"
+                android:layout_marginBottom="12dp"
+                />
 
+            <TextView
+                android:id="@+id/email_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/exampleMail"
+                android:gravity="center_horizontal"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -65,14 +78,16 @@
                 android:id="@+id/imageView3"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/logout_icon" />
+                android:src="@drawable/logout_icon"
+                />
 
             <TextView
                 android:id="@+id/logout_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Logout"
-                android:textSize="17sp" />
+                android:textSize="17sp"
+                />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -80,12 +95,13 @@
         android:id="@+id/favorites_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Preferiti"
+        android:text="@string/preferiti"
         android:textSize="20sp"
         android:textStyle="bold"
         android:gravity="center"
         android:paddingTop="12dp"
-        android:paddingBottom="8dp" />
+        android:paddingBottom="8dp"
+        />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

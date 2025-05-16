@@ -28,5 +28,6 @@
     <string name="error_email_login">Check the email address</string>
     <string name="error_collision_user">This email is already registered</string>
     <string name="default_web_client_id">766436968690-vtdmk2jvgbqu7bspni9brv1itmdq3d0m.apps.googleusercontent.com</string>
+    <string name="preferiti">Preferiti</string>
 
 </resources>
