@@ -25,4 +25,8 @@ public abstract class BaseProductLocalDataSource {
     public abstract LiveData<List<Product>> getLikedProducts();
 
     public abstract void insertProducts(List<Product> productList);
+
+    public abstract LiveData<List<Product>> getFavoriteProductsBySearchTerm(String searchTerm);
+
+
 }

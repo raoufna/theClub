@@ -109,6 +109,7 @@ public class ProductRecycleAdapter extends RecyclerView.Adapter<ProductRecycleAd
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, final int position) {
                 Product product = productList.get(position);
+            Log.d("ADAPTER", "Pos: " + position + " - Name: " + product.getName() + " - Term: " + product.getSearchTerm());
 
                 viewHolder.getTextViewTitle().setText(product.getName());
                 viewHolder.getTextViewDescription().setText(product.getBrandName());

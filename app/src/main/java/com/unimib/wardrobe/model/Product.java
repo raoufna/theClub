@@ -81,6 +81,13 @@ public class Product {
     public void setSearchTerm(String searchTerm) {
         this.searchTerm = searchTerm;
     }
+    public Product(Product other) {
+        this.name = other.name;
+        this.brandName = other.brandName;
+        this.imageUrl = other.imageUrl;
+        this.liked = other.liked;
+    }
+
 
 }
 

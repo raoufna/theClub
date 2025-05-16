@@ -49,4 +49,7 @@ List<Product> getAll();
     @Query("DELETE from Product")
     void deleteAll();
 
+    @Query("SELECT * FROM Product WHERE searchTerm = :searchTerm AND liked = 1")
+    LiveData<List<Product>> getFavoriteProductsBySearchTerm(String searchTerm);
+
 }

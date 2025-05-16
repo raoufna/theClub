@@ -116,4 +116,8 @@ public class ProductLocalDataSource extends BaseProductLocalDataSource {
             }
         });
     }
+
+    public LiveData<List<Product>> getFavoriteProductsBySearchTerm(String searchTerm) {
+        return productDAO.getFavoriteProductsBySearchTerm(searchTerm);
+    }
 }

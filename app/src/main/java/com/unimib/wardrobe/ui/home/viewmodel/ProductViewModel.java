@@ -1,5 +1,7 @@
 package com.unimib.wardrobe.ui.home.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,7 +13,9 @@ import com.unimib.wardrobe.model.Result;
 import com.unimib.wardrobe.repository.product.ProductRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -28,6 +32,10 @@ public class ProductViewModel extends ViewModel {
     public ProductViewModel(ProductRepository productRepository) {
         this.productRepository = productRepository;
         this.page = 1;
+    }
+
+    public LiveData<List<Product>> getFavoriteProductsBySearchTerm(String searchTerm) {
+        return productRepository.getFavoriteProductsBySearchTerm(searchTerm);
     }
 
     public MutableLiveData<Result> getProducts(String searchTerm, long lastUpdate) {
@@ -75,33 +83,66 @@ public class ProductViewModel extends ViewModel {
     public void fetchCombinedProducts(List<String> searchTerms, long lastUpdate) {
         List<Product> combinedList = new ArrayList<>();
         AtomicInteger responsesCount = new AtomicInteger(0);
+        int totalRequests = searchTerms.size();
 
         for (String searchTerm : searchTerms) {
-            // Crea una variabile finale per catturare il valore corretto
-            final String currentSearchTerm = searchTerm;
+            fetchAndProcessProducts(searchTerm, lastUpdate, combinedList, responsesCount, totalRequests);
+        }
+    }
 
-            productRepository.fetchProducts(currentSearchTerm, 10, lastUpdate)
-                    .observeForever(result -> {
-                        if (result instanceof Result.Success) {
-                            ProductAPIResponse response = ((Result.Success) result).getData();
-                            if (response != null && response.getData() != null) {
-                                List<Product> products = response.getData().getProducts();
-                                if (products != null) {
-                                    // Usa currentSearchTerm invece della variabile del loop
-                                    for (Product product : products) {
-                                        product.setSearchTerm(currentSearchTerm);
+
+
+
+    private void fetchAndProcessProducts(String searchTerm, long lastUpdate, List<Product> combinedList,
+                                         AtomicInteger responsesCount, int totalRequests) {
+
+        Log.d("DEBUG", "fetchAndProcessProducts called with searchTerm: " + searchTerm);
+
+        productRepository.fetchProducts(searchTerm, 10, lastUpdate)
+                .observeForever(result -> {
+                    Log.d("DEBUG", "Inside observeForever for searchTerm: " + searchTerm);
+
+                    if (result instanceof Result.Success) {
+                        ProductAPIResponse response = ((Result.Success) result).getData();
+
+                        if (response != null && response.getData() != null) {
+                            List<Product> products = response.getData().getProducts();
+                            String responseSearchTerm = response.getData().getSearchTerm(); // <-- qui
+
+                            Log.d("DEBUG", ">> searchTerm from response = " + responseSearchTerm);
+
+                            if (products != null) {
+                                for (Product product : products) {
+                                    Log.d("DEBUG", "Prodotto originale: " + product.getName() + " | searchTerm=" + product.getSearchTerm());
+
+                                    Product newProduct = new Product();
+                                    newProduct.setUid(product.getUid());
+                                    newProduct.setName(product.getName());
+                                    newProduct.setBrandName(product.getBrandName());
+                                    newProduct.setImageUrl(product.getImageUrl());
+
+                                    // ⬇️ Assegniamo il searchTerm dalla response
+                                    newProduct.setSearchTerm(responseSearchTerm);
+
+                                    Log.d("DEBUG", "NUOVO prodotto creato: " + newProduct.getName() + " | searchTerm=" + newProduct.getSearchTerm());
+
+                                    synchronized (combinedList) {
+                                        combinedList.add(newProduct);
                                     }
-                                    combinedList.addAll(products);
                                 }
                             }
                         }
+                    }
 
-                        if (responsesCount.incrementAndGet() == searchTerms.size()) {
-                            ProductAPIResponse combinedResponse = new ProductAPIResponse(combinedList);
-                            combinedLiveData.postValue(new Result.Success(combinedResponse));
-                        }
-                    });
-        }
+                    if (responsesCount.incrementAndGet() == totalRequests) {
+                        ProductAPIResponse combinedResponse = new ProductAPIResponse(combinedList);
+                        combinedLiveData.postValue(new Result.Success(combinedResponse));
+                    }
+                });
     }
+
+
+
+
 
 }

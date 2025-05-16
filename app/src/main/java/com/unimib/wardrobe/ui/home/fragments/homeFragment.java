@@ -102,6 +102,9 @@ public class homeFragment extends Fragment {
 
                 if (combinedResponse != null) {
                     List<Product> allProducts = combinedResponse.getData().getProducts();
+                    for (Product p : allProducts) {
+                        Log.d("SearchTermDebug", "Prodotto: " + p.getName() + ", SearchTerm: " + p.getSearchTerm());
+                    }
 
 
                     // Aggiungi i nuovi prodotti alla lista
