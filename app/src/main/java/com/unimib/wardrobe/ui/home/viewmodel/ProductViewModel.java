@@ -4,9 +4,11 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.fido.u2f.api.common.ResponseData;
+import com.unimib.wardrobe.model.Outfit;
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.model.ProductAPIResponse;
 import com.unimib.wardrobe.model.Result;
@@ -16,7 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 public class ProductViewModel extends ViewModel {
@@ -28,10 +32,14 @@ public class ProductViewModel extends ViewModel {
     private LiveData<Result> productsListLiveData;
     private MutableLiveData<Result> favoriteNewsListLiveData;
     private final MutableLiveData<Result> combinedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Outfit> outfitLiveData = new MutableLiveData<>();
 
     public ProductViewModel(ProductRepository productRepository) {
         this.productRepository = productRepository;
         this.page = 1;
+    }
+    public LiveData<Outfit> getOutfit() {
+        return outfitLiveData;
     }
 
     public LiveData<List<Product>> getFavoriteProductsBySearchTerm(String searchTerm) {
@@ -140,7 +148,41 @@ public class ProductViewModel extends ViewModel {
                     }
                 });
     }
+    public void generateOutfitFromList(List<Product> products) {
+        if (products == null) return;
+        Random rnd = new Random();
+        List<Product> tshirts = products.stream()
+                .filter(p -> "tshirt".equalsIgnoreCase(p.getSearchTerm()))
+                .collect(Collectors.toList());
+        List<Product> jeans = products.stream()
+                .filter(p -> "jeans".equalsIgnoreCase(p.getSearchTerm()))
+                .collect(Collectors.toList());
+        List<Product> sneakers = products.stream()
+                .filter(p -> "sneakers".equalsIgnoreCase(p.getSearchTerm()))
+                .collect(Collectors.toList());
 
+        Product t = tshirts.isEmpty()  ? null : tshirts.get(rnd.nextInt(tshirts.size()));
+        Product j = jeans.isEmpty()    ? null : jeans.get(rnd.nextInt(jeans.size()));
+        Product s = sneakers.isEmpty()? null : sneakers.get(rnd.nextInt(sneakers.size()));
+
+        outfitLiveData.setValue(new Outfit(t, j, s));
+    }
+
+    // 2) tieni il vecchio generateOutfit() per compatibilità ma fallo delegare
+    public void generateOutfit() {
+        LiveData<List<Product>> source = getLikedProducts();
+        Observer<List<Product>> oneTimeObserver = new Observer<List<Product>>() {
+            @Override
+            public void onChanged(List<Product> products) {
+                // Genera l’outfit solo quando arriva la lista
+                generateOutfitFromList(products);
+                // Poi rimuovi te stesso
+                source.removeObserver(this);
+            }
+        };
+        // Osserva una volta
+        source.observeForever(oneTimeObserver);
+    }
 
 
 

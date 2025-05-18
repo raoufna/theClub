@@ -5,18 +5,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.unimib.wardrobe.R;
+import com.unimib.wardrobe.model.Outfit;
 import com.unimib.wardrobe.model.Product;
 import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModel;
 import com.unimib.wardrobe.ui.home.viewmodel.ProductViewModelFactory;
@@ -26,87 +28,138 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
 public class addFragment extends Fragment {
-        private ImageView ivTshirt, ivJeans, ivSneakers;
-        private Button btnLoad;
-        private ProductViewModel productViewModel;
+    private ImageView ivTshirt, ivJeans, ivSneakers;
+    private ImageButton prevT, nextT, prevJ, nextJ, prevS, nextS;
+    private Button btnLoad;
+    private ProductViewModel productViewModel;
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_add, container, false);
-        }
+    // Liste e indici per lo scrolling manuale
+    private List<Product> tshirts, jeans, sneakers;
+    private int tIndex = 0, jIndex = 0, sIndex = 0;
+    private final Random random = new Random();
 
-        @Override
-        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-
-            ivTshirt = view.findViewById(R.id.ivTshirt);
-            ivJeans = view.findViewById(R.id.ivJeans);
-            ivSneakers = view.findViewById(R.id.ivSneakers);
-            btnLoad = view.findViewById(R.id.btnLoad);
-
-            productViewModel = new ViewModelProvider(
-                    requireActivity(),
-                    new ProductViewModelFactory(
-                            ServiceLocator.getInstance()
-                                    .getProductsRepository(
-                                            requireActivity().getApplication(),
-                                            requireActivity().getResources().getBoolean(R.bool.debug_mode)
-                                    )
-                    )
-            ).get(ProductViewModel.class);
-
-            btnLoad.setOnClickListener(v -> loadFavoriteProducts());
-        }
-
-    private void loadFavoriteProducts() {
-        Random random = new Random();
-
-        // T-shirt
-        productViewModel.getFavoriteProductsBySearchTerm("tshirt")
-                .observe(getViewLifecycleOwner(), list -> {
-                    if (list != null && !list.isEmpty()) {
-                        Product chosen = list.get(random.nextInt(list.size()));
-                        loadImage(chosen.getFullImageUrl(), ivTshirt);
-                    } else {
-                        ivTshirt.setImageResource(android.R.drawable.ic_delete); // la tua X rossa
-                    }
-                });
-
-        // Jeans
-        productViewModel.getFavoriteProductsBySearchTerm("jeans")
-                .observe(getViewLifecycleOwner(), list -> {
-                    if (list != null && !list.isEmpty()) {
-                        Product chosen = list.get(random.nextInt(list.size()));
-                        loadImage(chosen.getFullImageUrl(), ivJeans);
-                    } else {
-                        ivJeans.setImageResource(android.R.drawable.ic_delete);
-                    }
-                });
-
-        // Sneakers
-        productViewModel.getFavoriteProductsBySearchTerm("sneakers")
-                .observe(getViewLifecycleOwner(), list -> {
-                    if (list != null && !list.isEmpty()) {
-                        Product chosen = list.get(random.nextInt(list.size()));
-                        loadImage(chosen.getFullImageUrl(), ivSneakers);
-                    } else {
-                        ivSneakers.setImageResource(android.R.drawable.ic_delete);
-                    }
-                });
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_add, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    private void loadImage(String imageUrl, ImageView imageView) {
-            Glide.with(requireContext())
-                    .load(imageUrl)
+        // 1) Trova le view
+        ivTshirt = view.findViewById(R.id.ivTshirt);
+        prevT = view.findViewById(R.id.btnPrevTshirt);
+        nextT = view.findViewById(R.id.btnNextTshirt);
+        ivJeans = view.findViewById(R.id.ivJeans);
+        prevJ = view.findViewById(R.id.btnPrevJeans);
+        nextJ = view.findViewById(R.id.btnNextJeans);
+        ivSneakers = view.findViewById(R.id.ivSneakers);
+        prevS = view.findViewById(R.id.btnPrevSneakers);
+        nextS = view.findViewById(R.id.btnNextSneakers);
+        btnLoad = view.findViewById(R.id.btnLoad);
+
+        // 2) Inizializza subito il ViewModel CON la factory
+        productViewModel = new ViewModelProvider(
+                requireActivity(),
+                new ProductViewModelFactory(
+                        ServiceLocator.getInstance()
+                                .getProductsRepository(
+                                        requireActivity().getApplication(),
+                                        requireActivity().getResources().getBoolean(R.bool.debug_mode)
+                                )
+                )
+        ).get(ProductViewModel.class);
+
+        // 3) Osserva la lista dei preferiti una sola volta per popolare le liste
+        productViewModel.getLikedProducts().observe(getViewLifecycleOwner(), new Observer<List<Product>>() {
+            @Override
+            public void onChanged(List<Product> all) {
+                // Filtra per categoria
+                tshirts = filterByTerm(all, "tshirt");
+                jeans = filterByTerm(all, "jeans");
+                sneakers = filterByTerm(all, "sneakers");
+
+                // Genera il primo outfit solo dopo aver caricato i preferiti
+                if (productViewModel.getOutfit().getValue() == null && all != null && !all.isEmpty()) {
+                    productViewModel.generateOutfit();
+                }
+            }
+        });
+
+        // 4) Osserva l'Outfit generato per aggiornarlo dopo un click su "Genera" o al ritorno
+        productViewModel.getOutfit().observe(getViewLifecycleOwner(), new Observer<Outfit>() {
+            @Override
+            public void onChanged(Outfit outfit) {
+                // Mostra l’outfit (o placeholder se null)
+                displayImage(outfit != null ? outfit.getTshirt() : null, ivTshirt);
+                displayImage(outfit != null ? outfit.getJeans() : null, ivJeans);
+                displayImage(outfit != null ? outfit.getSneakers() : null, ivSneakers);
+
+                // Sincronizza gli indici al prodotto scelto
+                if (outfit != null) {
+                    tIndex = (tshirts != null && outfit.getTshirt() != null)
+                            ? tshirts.indexOf(outfit.getTshirt()) : 0;
+                    jIndex = (jeans != null && outfit.getJeans() != null)
+                            ? jeans.indexOf(outfit.getJeans()) : 0;
+                    sIndex = (sneakers != null && outfit.getSneakers() != null)
+                            ? sneakers.indexOf(outfit.getSneakers()) : 0;
+                }
+            }
+        });
+
+        // 5) Bottone “Genera Outfit”
+        btnLoad.setOnClickListener(v -> {
+            if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                Toast.makeText(requireContext(),
+                        "Devi essere loggato", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            productViewModel.generateOutfit();
+        });
+
+        // 6) Freccette per scorrere manualmente
+        prevT.setOnClickListener(v -> scrollList(ivTshirt, tshirts, -1));
+        nextT.setOnClickListener(v -> scrollList(ivTshirt, tshirts, +1));
+        prevJ.setOnClickListener(v -> scrollList(ivJeans, jeans, -1));
+        nextJ.setOnClickListener(v -> scrollList(ivJeans, jeans, +1));
+        prevS.setOnClickListener(v -> scrollList(ivSneakers, sneakers, -1));
+        nextS.setOnClickListener(v -> scrollList(ivSneakers, sneakers, +1));
+    }
+
+    private List<Product> filterByTerm(List<Product> all, String term) {
+        return (all == null)
+                ? java.util.Collections.emptyList()
+                : all.stream()
+                .filter(p -> term.equalsIgnoreCase(p.getSearchTerm()))
+                .collect(Collectors.toList());
+    }
+
+    private void displayImage(@Nullable Product p, ImageView iv) {
+        if (p != null) {
+            Glide.with(this)
+                    .load(p.getFullImageUrl())
                     .placeholder(android.R.drawable.ic_menu_gallery)
                     .error(android.R.drawable.ic_delete)
-                    .into(imageView);
+                    .into(iv);
+        } else {
+            iv.setImageResource(android.R.drawable.ic_delete);
         }
     }
+
+    // helper per scroll con freccia
+    private void scrollList(ImageView iv, List<Product> list, int delta) {
+        if (list != null && !list.isEmpty()) {
+            if (iv == ivTshirt) tIndex = (tIndex + delta + list.size()) % list.size();
+            else if (iv == ivJeans) jIndex = (jIndex + delta + list.size()) % list.size();
+            else if (iv == ivSneakers) sIndex = (sIndex + delta + list.size()) % list.size();
+
+            // scegli l'indice corretto
+            int idx = iv == ivTshirt ? tIndex : iv == ivJeans ? jIndex : sIndex;
+            displayImage(list.get(idx), iv);
+        }
+    }
+}
