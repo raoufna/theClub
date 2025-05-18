@@ -64,30 +64,45 @@ public class addFragment extends Fragment {
             btnLoad.setOnClickListener(v -> loadFavoriteProducts());
         }
 
-        private void loadFavoriteProducts() {
-            // Carica T-Shirt preferiti
-            productViewModel.getFavoriteProductsBySearchTerm("tshirt").observe(getViewLifecycleOwner(), products -> {
-                if (products != null && !products.isEmpty()) {
-                    loadImage(products.get(0).getImageUrl(), ivTshirt);
-                }
-            });
+    private void loadFavoriteProducts() {
+        Random random = new Random();
 
-            // Carica Jeans preferiti
-            productViewModel.getFavoriteProductsBySearchTerm("jeans").observe(getViewLifecycleOwner(), products -> {
-                if (products != null && !products.isEmpty()) {
-                    loadImage(products.get(0).getImageUrl(), ivJeans);
-                }
-            });
+        // T-shirt
+        productViewModel.getFavoriteProductsBySearchTerm("tshirt")
+                .observe(getViewLifecycleOwner(), list -> {
+                    if (list != null && !list.isEmpty()) {
+                        Product chosen = list.get(random.nextInt(list.size()));
+                        loadImage(chosen.getFullImageUrl(), ivTshirt);
+                    } else {
+                        ivTshirt.setImageResource(android.R.drawable.ic_delete); // la tua X rossa
+                    }
+                });
 
-            // Carica Sneakers preferiti
-            productViewModel.getFavoriteProductsBySearchTerm("sneakers").observe(getViewLifecycleOwner(), products -> {
-                if (products != null && !products.isEmpty()) {
-                    loadImage(products.get(0).getImageUrl(), ivSneakers);
-                }
-            });
-        }
+        // Jeans
+        productViewModel.getFavoriteProductsBySearchTerm("jeans")
+                .observe(getViewLifecycleOwner(), list -> {
+                    if (list != null && !list.isEmpty()) {
+                        Product chosen = list.get(random.nextInt(list.size()));
+                        loadImage(chosen.getFullImageUrl(), ivJeans);
+                    } else {
+                        ivJeans.setImageResource(android.R.drawable.ic_delete);
+                    }
+                });
 
-        private void loadImage(String imageUrl, ImageView imageView) {
+        // Sneakers
+        productViewModel.getFavoriteProductsBySearchTerm("sneakers")
+                .observe(getViewLifecycleOwner(), list -> {
+                    if (list != null && !list.isEmpty()) {
+                        Product chosen = list.get(random.nextInt(list.size()));
+                        loadImage(chosen.getFullImageUrl(), ivSneakers);
+                    } else {
+                        ivSneakers.setImageResource(android.R.drawable.ic_delete);
+                    }
+                });
+    }
+
+
+    private void loadImage(String imageUrl, ImageView imageView) {
             Glide.with(requireContext())
                     .load(imageUrl)
                     .placeholder(android.R.drawable.ic_menu_gallery)
