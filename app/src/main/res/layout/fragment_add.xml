@@ -1,14 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.fragments.addFragment">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="add" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</FrameLayout>
+        <!-- T-SHIRT CARD -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/btnPrevTshirt"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_previous"/>
+
+            <ImageView
+                android:id="@+id/ivTshirt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/btnPrevTshirt"
+                android:layout_toStartOf="@id/btnNextTshirt"
+                android:scaleType="centerCrop"/>
+
+            <ImageButton
+                android:id="@+id/btnNextTshirt"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_next"/>
+        </RelativeLayout>
+
+        <!-- JEANS CARD (stessa struttura) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp">
+
+            <ImageButton
+                android:id="@+id/btnPrevJeans"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_previous"/>
+
+            <ImageView
+                android:id="@+id/ivJeans"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/btnPrevJeans"
+                android:layout_toStartOf="@id/btnNextJeans"
+                android:scaleType="centerCrop"/>
+
+            <ImageButton
+                android:id="@+id/btnNextJeans"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_next"/>
+        </RelativeLayout>
+
+        <!-- SNEAKERS CARD -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageButton
+                android:id="@+id/btnPrevSneakers"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_previous"/>
+
+            <ImageView
+                android:id="@+id/ivSneakers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/btnPrevSneakers"
+                android:layout_toStartOf="@id/btnNextSneakers"
+                android:scaleType="centerCrop"/>
+
+            <ImageButton
+                android:id="@+id/btnNextSneakers"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_next"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnLoad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Genera Outfit"/>
+    </LinearLayout>
+</ScrollView>

@@ -13,6 +13,7 @@ public class Product {
     private String brandName;
     private String imageUrl;
     private boolean liked;
+    private String searchTerm;
 
     public Product(){
     }
@@ -72,6 +73,22 @@ public class Product {
         Product product = (Product) o;
         return Objects.equals(name, product.name) && Objects.equals(brandName, product.brandName) && Objects.equals(imageUrl, product.imageUrl);
     }
+
+    public String getSearchTerm() {
+        return searchTerm;
+    }
+
+    public void setSearchTerm(String searchTerm) {
+        this.searchTerm = searchTerm;
+    }
+    public Product(Product other) {
+        this.name = other.name;
+        this.brandName = other.brandName;
+        this.imageUrl = other.imageUrl;
+        this.liked = other.liked;
+    }
+
+
 }
 
 

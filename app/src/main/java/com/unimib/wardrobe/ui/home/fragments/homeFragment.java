@@ -1,5 +1,4 @@
 package com.unimib.wardrobe.ui.home.fragments;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -96,43 +95,45 @@ public class homeFragment extends Fragment {
         Log.d("ProductLocalDataSource", "DEBUG MIO ");
 
         productViewModel.fetchCombinedProducts(searchTerms, lastUpdate);
-        productViewModel.getCombinedProducts().observe(getViewLifecycleOwner(), combinedResult -> {
-                    if (combinedResult != null) {
-                        Log.d("ProductLocalDataSource", "DEBUG tipo result: " + combinedResult.getClass().getSimpleName());
-                    } else {
-                        Log.d("ProductLocalDataSource", "DEBUG tipo result: NULL");
+
+        productViewModel.getCombinedProducts(searchTerms, lastUpdate).observe(getViewLifecycleOwner(), combinedResult -> {
+            if (combinedResult instanceof Result.Success) {
+                ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
+
+                if (combinedResponse != null) {
+                    List<Product> allProducts = combinedResponse.getData().getProducts();
+                    for (Product p : allProducts) {
+                        Log.d("SearchTermDebug", "Prodotto: " + p.getName() + ", SearchTerm: " + p.getSearchTerm());
                     }
-                    if (combinedResult instanceof Result.Success) {
-                        ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
 
-                        if (combinedResponse != null) {
-                            List<Product> allProducts = combinedResponse.getData().getProducts();
 
-                            // Aggiungi i nuovi prodotti alla lista
-                            Log.d("ProductLocalDataSource", "Prodotti ricevuti dalla LiveData: " + allProducts.size());
-                            productList.clear();
-                            productList.addAll(allProducts);
+                    // Aggiungi i nuovi prodotti alla lista
+                    Log.d("ProductLocalDataSource", "Prodotti ricevuti dalla LiveData: " + allProducts.size());
+                    productList.clear();
+                    productList.addAll(allProducts);
 
-                            // Sincronizza i preferiti con Firebase e Room
-                            syncFavoritesWithFirebaseAndRoom(allProducts);
 
-                            // Aggiorna la RecyclerView
-                            adapter.notifyDataSetChanged();
 
-                            // Nascondi il progress indicator e mostra la RecyclerView
-                            recyclerView.setVisibility(View.VISIBLE);
-                            circularProgressIndicator.setVisibility(View.GONE);
+                    // Sincronizza i preferiti con Firebase e Room
+                    syncFavoritesWithFirebaseAndRoom(allProducts);
 
-                            Log.d("ProductLocalDataSource", "Dati caricati e aggiornati");
-                        }
-                    } else if (combinedResult instanceof Result.Error) {
-                        Snackbar.make(view,
-                                getString(R.string.error_retireving_articles),
-                                Snackbar.LENGTH_SHORT).show();
-                        recyclerView.setVisibility(View.GONE);
-                        circularProgressIndicator.setVisibility(View.GONE);
-                    }
-                });
+                    // Aggiorna la RecyclerView
+                    adapter.notifyDataSetChanged();
+
+                    // Nascondi il progress indicator e mostra la RecyclerView
+                    recyclerView.setVisibility(View.VISIBLE);
+                    circularProgressIndicator.setVisibility(View.GONE);
+
+                    Log.d("ProductLocalDataSource", "Dati caricati e aggiornati");
+                }
+            } else if (combinedResult instanceof Result.Error) {
+                Snackbar.make(view,
+                        getString(R.string.error_retireving_articles),
+                        Snackbar.LENGTH_SHORT).show();
+                recyclerView.setVisibility(View.GONE);
+                circularProgressIndicator.setVisibility(View.GONE);
+            }
+        });
 
         return view;
     }

@@ -14,7 +14,7 @@ public class Constants {
     public static final String TOP_HEADLINES_SEARCHTERM_PARAMETER = "searchTerm";
     public static final String TOP_HEADLINES_APIKEY = "rapidapi_key";
     public static final String host = "asos10.p.rapidapi.com";  // <-- Assicurati che sia giusto
-    public static final String apiKey = "ebbf6e112emshc6a6e893aec837fp1d90a4jsnbe5fae02d0c3";
+    public static final String apiKey = "801252ebd9mshc1c2f3829ccaa9bp167ac2jsne0e1e5e9e9a7";
 
     public static final String INVALID_USER_ERROR = "invalidUserError";
     public static final String INVALID_CREDENTIALS_ERROR = "invalidCredentials";
