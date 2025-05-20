@@ -45,20 +45,20 @@ public class ProductRepository implements ProductCallback {
     public LiveData<Result> fetchProducts(String searchTerm, int page, long lastUpdate) {
         MutableLiveData<Result> resultLiveData = new MutableLiveData<>();
         long currentTime = System.currentTimeMillis();
-
-        if (currentTime - lastUpdate > FRESH_TIMEOUT) {
+        Log.d("DEBUG_lastUpdate", "🚨 lastUpdate = " + lastUpdate + ", currentTime = " + currentTime);
+        if (lastUpdate == 0 || currentTime - lastUpdate > FRESH_TIMEOUT) {
+            Log.d("DEBUG_CHIAMATA", "API e lastUpdate = "+lastUpdate + " e current time="+currentTime);
             Log.d("DEBUG", "fetchProducts chiamato con: " + searchTerm);
 
             // Imposta il callback prima di avviare la richiesta
             ProductRemoteDataSource.setProductCallback(new ProductCallback() {
                 @Override
                 public void onSuccessFromRemote(ProductAPIResponse productAPIResponse, long lastUpdate) {
+                    lastUpdate = System.currentTimeMillis();
                     resultLiveData.postValue(new Result.Success(productAPIResponse));
                     Log.d("DEBUG", "✅ SUCCESS: Dati ricevuti, chiamata a insertProducts");
                     ProductLocalDataSource.insertProducts(productAPIResponse.getData().getProducts());
-                    long now = System.currentTimeMillis();
-                    SharedPreferences prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
-                    prefs.edit().putLong("last_update_timestamp", now).apply();
+
                 }
 
                 @Override
@@ -97,6 +97,7 @@ public class ProductRepository implements ProductCallback {
             ProductRemoteDataSource.getProducts(searchTerm);
 
         } else {
+            Log.d("DEBUG_CHIAMATA", "LOCALE");
             ProductLocalDataSource.getProducts();
         }
 

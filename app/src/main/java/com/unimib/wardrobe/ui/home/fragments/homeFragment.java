@@ -38,6 +38,7 @@ public class homeFragment extends Fragment {
     private List<ProductCategory> categoryList = new ArrayList<>();
     private ProductRepository productRepository;
     private ProductViewModel productViewModel;
+    private long lastUpdate = 0L;
 
     public homeFragment() {}
 
@@ -67,13 +68,13 @@ public class homeFragment extends Fragment {
         recyclerView.setVisibility(View.GONE);
 
         List<String> searchTerms = Arrays.asList("jeans", "tshirt", "sneakers");
-        SharedPreferences prefs = requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE);
-        long lastUpdate = prefs.getLong("last_update_timestamp", 0);
+
 
         productViewModel.fetchCombinedProducts(searchTerms, lastUpdate);
         productViewModel.getCombinedProducts(searchTerms, lastUpdate).observe(getViewLifecycleOwner(), combinedResult -> {
             if (combinedResult instanceof Result.Success) {
                 ProductAPIResponse combinedResponse = ((Result.Success) combinedResult).getData();
+                lastUpdate = System.currentTimeMillis();
 
                 if (combinedResponse != null) {
                     List<Product> allProducts = combinedResponse.getData().getProducts();
