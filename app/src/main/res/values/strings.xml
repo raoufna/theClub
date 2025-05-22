@@ -22,12 +22,12 @@
     <string name="error_retrieving_product">impossibile caricare i prodotti</string>
     <string name="error_retrieving_news" />
     <string name="error_retireving_articles" />
-    <string name="login_with_gogole">login with gogole</string>
+    <string name="login_with_google">login with google</string>
     <string name="error_unexpected">unexpected error</string>
     <string name="error_password_login">The password must have at least 8 characters</string>
     <string name="error_email_login">Check the email address</string>
     <string name="error_collision_user">This email is already registered</string>
-    <string name="default_web_client_id">766436968690-vtdmk2jvgbqu7bspni9brv1itmdq3d0m.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">766436968690-1tpki6oht0oglnft4jvo0nfsij56u66p.apps.googleusercontent.com</string>
     <string name="product_image">immagine del prodotto</string>
 
 </resources>

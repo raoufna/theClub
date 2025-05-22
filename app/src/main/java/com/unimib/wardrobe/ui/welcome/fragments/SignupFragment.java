@@ -119,7 +119,10 @@ public class SignupFragment extends Fragment {
             }
 
         });
-
+        Button textButtonlog = view.findViewById(R.id.textButtonlog);
+        textButtonlog.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_SignupFragment_to_loginFragment);
+        });
 
         return view;
     }
