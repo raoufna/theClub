@@ -10,14 +10,12 @@
     android:gravity="center"
     tools:context=".ui.welcome.LoginActivity">
 
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:contentDescription="@string/image_of_a_w"
         app:srcCompat="@drawable/logo" />
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailInputLayout"
@@ -32,15 +30,13 @@
             android:id="@+id/email"
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/passwordInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:startIconContentDescription="ciao"
@@ -51,34 +47,34 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            />
+            android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
-    <Button
 
+    <Button
         style="@style/Widget.Material3.Button.TextButton"
         android:id="@+id/textButton"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/passwordForgotten"/>
+
     <Button
         android:id="@+id/filledButton"
         android:layout_marginStart="70dp"
         android:layout_marginEnd="70dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/loginButton"
-        />
+        android:text="@string/loginButton"/>
+
     <Button
         android:id="@+id/SignupButton"
         android:layout_marginStart="70dp"
         android:layout_marginEnd="70dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/SignupButton"
-        />
+        android:text="@string/SignupButton"/>
+
+    <!-- Bottone Login with Google: testo + icona immediatamente affiancati -->
     <Button
         android:id="@+id/SignupButtonWithGoogle"
         android:layout_marginStart="70dp"
@@ -86,5 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/login_with_google"
-        />
+        app:icon="@drawable/ic_google_logo"
+        app:iconGravity="textEnd" />
+
 </LinearLayout>

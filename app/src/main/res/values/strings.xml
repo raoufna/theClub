@@ -22,7 +22,7 @@
     <string name="error_retrieving_product">impossibile caricare i prodotti</string>
     <string name="error_retrieving_news" />
     <string name="error_retireving_articles" />
-    <string name="login_with_google">login with google</string>
+    <string name="login_with_google">login with</string>
     <string name="error_unexpected">unexpected error</string>
     <string name="error_password_login">The password must have at least 8 characters</string>
     <string name="error_email_login">Check the email address</string>
