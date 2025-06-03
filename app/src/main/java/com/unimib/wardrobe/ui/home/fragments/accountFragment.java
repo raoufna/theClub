@@ -71,7 +71,7 @@ public class accountFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycleView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        adapter = new ProductRecycleAdapter(R.layout.card_item, productList, false);
+        adapter = new ProductRecycleAdapter(R.layout.card_item_favourites, productList, false);
         recyclerView.setAdapter(adapter);
 
         // 🔄 Osserva i preferiti da Room
