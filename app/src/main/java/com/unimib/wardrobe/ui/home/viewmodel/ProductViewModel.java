@@ -34,6 +34,7 @@ public class ProductViewModel extends ViewModel {
     private final MutableLiveData<Result> combinedLiveData = new MutableLiveData<>();
     private final MutableLiveData<Outfit> outfitLiveData = new MutableLiveData<>();
 
+
     public ProductViewModel(ProductRepository productRepository) {
         this.productRepository = productRepository;
         this.page = 1;
@@ -105,7 +106,6 @@ public class ProductViewModel extends ViewModel {
                                          AtomicInteger responsesCount, int totalRequests) {
 
         Log.d("DEBUG", "fetchAndProcessProducts called with searchTerm: " + searchTerm);
-
         productRepository.fetchProducts(searchTerm, 10, lastUpdate)
                 .observeForever(result -> {
                     Log.d("DEBUG", "Inside observeForever for searchTerm: " + searchTerm);

@@ -35,9 +35,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.unimib.wardrobe.R;
 import com.unimib.wardrobe.model.Result;
 import com.unimib.wardrobe.model.User;
@@ -98,35 +100,47 @@ public class LoginFragment extends Fragment {
 
         startIntentSenderForResult = new ActivityResultContracts.StartIntentSenderForResult();
 
-        activityResultLauncher = registerForActivityResult(startIntentSenderForResult, activityResult -> {
-            if (activityResult.getResultCode() == Activity.RESULT_OK) {
-                Log.d(TAG, "result.getResultCode() == Activity.RESULT_OK");
-                try {
-                    SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(activityResult.getData());
-                    String idToken = credential.getGoogleIdToken();
-                    if (idToken !=  null) {
-                        // Got an ID token from Google. Use it to authenticate with Firebase.
-                        userViewModel.getGoogleUserMutableLiveData(idToken).observe(getViewLifecycleOwner(), authenticationResult -> {
-                            if (authenticationResult.isSuccess()) {
-                                User user = ((Result.UserSuccess) authenticationResult).getData();
-                                //saveLoginData(user.getEmail(), null, user.getIdToken());
-                                Log.i(TAG, "Logged as: " + user.getEmail());
-                                userViewModel.setAuthenticationError(false);
-                            } else {
-                                userViewModel.setAuthenticationError(true);
-                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                        getErrorMessage(((Result.Error) authenticationResult).getMessage()),
-                                        Snackbar.LENGTH_SHORT).show();
+        activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartIntentSenderForResult(),
+                activityResult -> {
+                    if (activityResult.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            SignInCredential credential =
+                                    oneTapClient.getSignInCredentialFromIntent(activityResult.getData());
+                            String idToken = credential.getGoogleIdToken();
+                            if (idToken != null) {
+                                // 1) Prepara il credential Firebase
+                                AuthCredential firebaseCredential =
+                                        GoogleAuthProvider.getCredential(idToken, null);
+
+                                // 2) Esegui il login su Firebase
+                                FirebaseAuth.getInstance()
+                                        .signInWithCredential(firebaseCredential)
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                // → Qui hai finalmente il login Google + Firebase
+                                                goToNextPage(requireView());
+                                            } else {
+                                                Snackbar.make(
+                                                        requireView(),
+                                                        "Autenticazione Google fallita: " +
+                                                                task.getException().getMessage(),
+                                                        Snackbar.LENGTH_SHORT
+                                                ).show();
+                                            }
+                                        });
                             }
-                        });
+                        } catch (ApiException e) {
+                            Snackbar.make(
+                                    requireView(),
+                                    getString(R.string.error_unexpected),
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
+                        }
                     }
-                } catch (ApiException e) {
-                    Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                            requireActivity().getString(R.string.error_unexpected),
-                            Snackbar.LENGTH_SHORT).show();
                 }
-            }
-        });
+        );
+
     }
 
 
@@ -208,13 +222,17 @@ public class LoginFragment extends Fragment {
 
         loginGoogleButton.setOnClickListener(v -> oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(requireActivity(), new OnSuccessListener<BeginSignInResult>() {
+
                     @Override
                     public void onSuccess(BeginSignInResult result) {
                         Log.d(TAG, "onSuccess from oneTapClient.beginSignIn(BeginSignInRequest)");
                         IntentSenderRequest intentSenderRequest =
                                 new IntentSenderRequest.Builder(result.getPendingIntent()).build();
                         activityResultLauncher.launch(intentSenderRequest);
+
                     }
+
+
                 })
                 .addOnFailureListener(requireActivity(), new OnFailureListener() {
                     @Override
@@ -227,6 +245,7 @@ public class LoginFragment extends Fragment {
                                 requireActivity().getString(R.string.error_unexpected),
                                 Snackbar.LENGTH_SHORT).show();
                     }
+
                 }));
 
 
